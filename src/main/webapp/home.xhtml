@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./templates/principal.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <ui:define name="titulo_perros">
+        Paseando Perros - Listado
+
+    </ui:define>
+
+    <ui:define name="content">
+
+
+        <h:form id="Formulario" >
+
+
+
+
+            <p:panel id="panelPerros" header="Listado perros ::: #{listaSEController.listaPerros.contarNodos()}">
+
+                <p:panelGrid columns="2"  >
+                    <p:outputLabel value="Número"/>
+                    <p:outputLabel value="#{listaSEController.perroMostrar.numero}"/>
+                    <p:outputLabel value="Nombre"/>
+                    <p:outputLabel value="#{listaSEController.perroMostrar.nombre}"/>
+                    <p:outputLabel value="Edad"/>
+                    <p:outputLabel value="#{listaSEController.perroMostrar.edad}"/>
+                    <p:outputLabel value="Sexo"/>
+                    <p:outputLabel value="#{listaSEController.perroMostrar.sexo}"/>
+                </p:panelGrid>
+                <p:panelGrid columns="3" id="panel" >
+                    <p:commandButton value="Primero" disabled="#{listaSEController.temp == listaSEController.listaPerros.cabeza}">
+                        <p:ajax listener="#{listaSEController.irPrimero()}" update="panelPerros"/>
+                    </p:commandButton>
+                    <p:commandButton value="Siguiente" disabled="#{listaSEController.temp.siguiente == null}" >
+                        <p:ajax listener="#{listaSEController.irSiguiente()}" update="panelPerros"/>
+                    </p:commandButton>
+                    <p:commandButton value="Último" disabled="#{listaSEController.temp.siguiente == null}">
+                        <p:ajax listener="#{listaSEController.irUltimo()}" update="panelPerros"/>
+                    </p:commandButton>
+
+                    <p:commandButton value="Invertir Lista">
+                        <p:ajax listener="#{listaSEController.invertir()}" update="panelPerros"/>
+                    </p:commandButton>
+
+                    <p:commandButton value="Intercambiar extremos">
+                        <p:ajax listener="#{listaSEController.intercambiar()}" update="panelPerros"/>
+                    </p:commandButton>
+
+                    <p:column>
+
+                    </p:column>
+
+                    <p:column>
+
+                        <p:outputLabel  value="Borrar por ID" />
+
+                    </p:column>
+
+                    <p:column>
+
+                        <p:outputLabel  value="Filtrar por ID" />
+
+                    </p:column>
+
+                    <p:column></p:column>
+
+                    <p:commandButton value="Borrar" disabled="#{listaSEController.listaPerros.contarNodos() == 1}"  >
+
+                        <p:growl id="errores"/>
+
+                        <p:ajax listener="#{listaSEController.borrarId()}" update="errores,panelPerros" resetValues="true" />
+
+                        <p:inputText id="Borrar" required="true" immediate="false" placeholder="Ingrese ID *" />
+
+                    </p:commandButton>
+
+
+                    <p:commandButton value="Filtrar"  
+                                     disabled="#{listaSEController.listaPerros.contarNodos() == 1}"  >
+
+
+
+                        <p:ajax listener="#{listaSEController.filtrar()}" update="errores,panelPerros" resetValues="true"  />
+
+                        <p:inputText id="Filtrar" required="true" immediate="false" placeholder="Ingrese ID *"/> 
+
+                    </p:commandButton> 
+
+                </p:panelGrid>          
+
+
+            </p:panel>
+
+        </h:form>
+
+        <h:form>
+
+            <p:menubar>
+
+                <p:submenu label="Selección" icon="pi pi-briefcase">
+                    <p:menuitem value="Machos" ajax="false" action="#{listaSEController.ordenarMacho()}"   />
+                    <p:menuitem value="Hembras" ajax="false" action="#{listaSEController.ordenarHembra()}" />
+                </p:submenu>
+
+            </p:menubar>
+
+        </h:form>
+
+
+    </ui:define>
+
+</ui:composition>
