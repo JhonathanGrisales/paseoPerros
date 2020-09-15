@@ -75,7 +75,7 @@
 
                         <p:ajax listener="#{listaSEController.borrarId()}" update="errores,panelPerros" resetValues="true" />
 
-                        <p:spinner value="#{listaSEController.borrar}" min="1"  max="#{listaSEController.listaPerros.contarNodos()}"
+                        <p:spinner value="#{listaSEController.borrar}" min="1"  max="100"
                                    id="Borrar" required="true" immediate="false" placeholder="Ingrese ID *" />
 
                     </p:commandButton>

@@ -33,9 +33,9 @@ public class ListaSEController implements Serializable {
     private Nodo temp;
 
     private String mesg;
-    
+
     private byte filtrar;
-    
+
     private int borrar;
 
     /**
@@ -98,10 +98,6 @@ public class ListaSEController implements Serializable {
     public void setBorrar(int borrar) {
         this.borrar = borrar;
     }
-    
-    
-    
-    
 
     public void irSiguiente() {
         //if(temp.getSiguiente()!=null)
@@ -135,8 +131,6 @@ public class ListaSEController implements Serializable {
         listaPerros.intercambiarExtremos();
         irPrimero();
     }
-    
-    
 
     //METODO PARA MOSTRAR LOS DATOS DE LA LISTA
     public void mostrarLista() {
@@ -151,7 +145,68 @@ public class ListaSEController implements Serializable {
 
     }
 
-    public void borrarId() {
+    public void ordenarMacho() {
+
+        listaPerros.ordenarMasculino();
+        irPrimero();
+    }
+
+    public void ordenarHembra() {
+
+        listaPerros.ordenarFemenino();
+        irPrimero();
+    }
+
+    public void buscarPosicion() {
+
+        Perro encontrado = listaPerros.buscarPosicion(filtrar);
+        perroMostrar = encontrado;
+
+    }
+
+    public void mostrarMensaje() {
+
+        FacesContext context = FacesContext.getCurrentInstance();
+
+        context.addMessage(null, new FacesMessage("Elemento no encontrado"));
+    }
+
+//    public void borrarPorId() {
+//
+//        listaPerros.eliminarNodoporId(borrar);
+//        irPrimero();
+//
+//    }
+
+//    public void filtrar() {
+//
+//        ExternalContext x = FacesContext.getCurrentInstance().getExternalContext();
+//        byte ide;
+//        ide = Byte.parseByte(x.getRequestParameterMap().get("Formulario:Filtrar"));
+//
+//        temp = listaPerros.getCabeza();
+//
+//        while (temp != null && temp.getDato().getNumero() != filtrar) {
+//
+//            temp = temp.getSiguiente();
+//        }
+//
+//        if (temp != null && temp.getDato().getNumero() == filtrar) {
+//
+//            Nodo filtro = temp;
+//
+//            perroMostrar = temp.getDato();
+//
+//        } else if (temp == null) {
+//
+//          
+//
+//            mostrarMensaje();
+//
+//        }
+//
+//    }
+        public void borrarId() {
 
 //        ExternalContext x = FacesContext.getCurrentInstance().getExternalContext();
 //        int ide;
@@ -170,73 +225,11 @@ public class ListaSEController implements Serializable {
             irPrimero();
         } else if (temp == null) {
 
-            System.out.println("");
+            
 
             mostrarMensaje();
             irPrimero();
         }
-
-    }
-
-    public void ordenarMacho() {
-
-        listaPerros.ordenarMasculino();
-        irPrimero();
-    }
-
-    public void ordenarHembra() {
-
-        listaPerros.ordenarFemenino();
-        irPrimero();
-    }
-
-    public void mostrarMensaje() {
-
-        FacesContext context = FacesContext.getCurrentInstance();
-
-        context.addMessage(null, new FacesMessage("Elemento no encontrado"));
-    }
-
-    public void filtrar() {
-
-//        ExternalContext x = FacesContext.getCurrentInstance().getExternalContext();
-//        byte ide;
-//        ide = Byte.parseByte(x.getRequestParameterMap().get("Formulario:Filtrar"));
-
-        temp = listaPerros.getCabeza();
-
-        while (temp != null && temp.getDato().getNumero() != filtrar) {
-
-            temp = temp.getSiguiente();
-        }
-
-        if (temp != null && temp.getDato().getNumero() == filtrar) {
-
-            Nodo filtro = temp;
-
-            perroMostrar = temp.getDato();
-
-        } else if (temp == null) {
-
-            System.out.println("");
-
-            mostrarMensaje();
-
-        }
-
-    }
-    
-    public void buscarPosicion(){
-        
-       
-
-        Perro encontrado = listaPerros.buscarPosicion(filtrar);
-        perroMostrar = encontrado;
-        
-
-       
-        
-       
 
     }
 }
