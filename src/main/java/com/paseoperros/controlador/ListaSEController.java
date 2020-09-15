@@ -33,6 +33,10 @@ public class ListaSEController implements Serializable {
     private Nodo temp;
 
     private String mesg;
+    
+    private byte filtrar;
+    
+    private int borrar;
 
     /**
      * Creates a new instance of ListaSEController
@@ -79,6 +83,26 @@ public class ListaSEController implements Serializable {
         this.listaPerros = listaPerros;
     }
 
+    public byte getFiltrar() {
+        return filtrar;
+    }
+
+    public void setFiltrar(byte filtrar) {
+        this.filtrar = filtrar;
+    }
+
+    public int getBorrar() {
+        return borrar;
+    }
+
+    public void setBorrar(int borrar) {
+        this.borrar = borrar;
+    }
+    
+    
+    
+    
+
     public void irSiguiente() {
         //if(temp.getSiguiente()!=null)
         //{
@@ -111,6 +135,8 @@ public class ListaSEController implements Serializable {
         listaPerros.intercambiarExtremos();
         irPrimero();
     }
+    
+    
 
     //METODO PARA MOSTRAR LOS DATOS DE LA LISTA
     public void mostrarLista() {
@@ -127,27 +153,27 @@ public class ListaSEController implements Serializable {
 
     public void borrarId() {
 
-        ExternalContext x = FacesContext.getCurrentInstance().getExternalContext();
-        int ide;
-        ide = Integer.parseInt(x.getRequestParameterMap().get("Formulario:Borrar"));
+//        ExternalContext x = FacesContext.getCurrentInstance().getExternalContext();
+//        int ide;
+//        ide = Integer.parseInt(x.getRequestParameterMap().get("Formulario:Borrar"));
 
         temp = listaPerros.getCabeza();
 
-        while (temp != null && temp.getDato().getNumero() != ide) {
+        while (temp != null && temp.getDato().getNumero() != borrar) {
 
             temp = temp.getSiguiente();
         }
 
-        if (temp != null && temp.getDato().getNumero() == ide) {
+        if (temp != null && temp.getDato().getNumero() == borrar) {
 
-            listaPerros.eliminarNodoporId(ide);
+            listaPerros.eliminarNodoporId(borrar);
             irPrimero();
         } else if (temp == null) {
 
             System.out.println("");
 
             mostrarMensaje();
-
+            irPrimero();
         }
 
     }
@@ -173,18 +199,18 @@ public class ListaSEController implements Serializable {
 
     public void filtrar() {
 
-        ExternalContext x = FacesContext.getCurrentInstance().getExternalContext();
-        byte ide;
-        ide = Byte.parseByte(x.getRequestParameterMap().get("Formulario:Filtrar"));
+//        ExternalContext x = FacesContext.getCurrentInstance().getExternalContext();
+//        byte ide;
+//        ide = Byte.parseByte(x.getRequestParameterMap().get("Formulario:Filtrar"));
 
         temp = listaPerros.getCabeza();
 
-        while (temp != null && temp.getDato().getNumero() != ide) {
+        while (temp != null && temp.getDato().getNumero() != filtrar) {
 
             temp = temp.getSiguiente();
         }
 
-        if (temp != null && temp.getDato().getNumero() == ide) {
+        if (temp != null && temp.getDato().getNumero() == filtrar) {
 
             Nodo filtro = temp;
 
@@ -197,6 +223,20 @@ public class ListaSEController implements Serializable {
             mostrarMensaje();
 
         }
+
+    }
+    
+    public void buscarPosicion(){
+        
+       
+
+        Perro encontrado = listaPerros.buscarPosicion(filtrar);
+        perroMostrar = encontrado;
+        
+
+       
+        
+       
 
     }
 }

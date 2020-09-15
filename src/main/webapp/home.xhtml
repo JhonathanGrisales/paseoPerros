@@ -75,7 +75,8 @@
 
                         <p:ajax listener="#{listaSEController.borrarId()}" update="errores,panelPerros" resetValues="true" />
 
-                        <p:inputText id="Borrar" required="true" immediate="false" placeholder="Ingrese ID *" />
+                        <p:spinner value="#{listaSEController.borrar}" min="1"  max="#{listaSEController.listaPerros.contarNodos()}"
+                                   id="Borrar" required="true" immediate="false" placeholder="Ingrese ID *" />
 
                     </p:commandButton>
 
@@ -84,10 +85,10 @@
                                      disabled="#{listaSEController.listaPerros.contarNodos() == 1}"  >
 
 
+                        <p:spinner value="#{listaSEController.filtrar}"  min="1"  max="#{listaSEController.listaPerros.contarNodos()}" 
+                                   id="Filtrar" required="true" immediate="false" /> 
 
-                        <p:ajax listener="#{listaSEController.filtrar()}" update="errores,panelPerros" resetValues="true"  />
-
-                        <p:inputText id="Filtrar" required="true" immediate="false" placeholder="Ingrese ID *"/> 
+                        <p:ajax listener="#{listaSEController.buscarPosicion()}"  update="errores,panelPerros"   />
 
                     </p:commandButton> 
 
