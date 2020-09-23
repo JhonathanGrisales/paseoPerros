@@ -8,11 +8,25 @@
     <ui:define name="titulo_perros">
         Paseando Perros - Formulario
     </ui:define>
-    
+
     <ui:define name="content">
-        <h:form>
+        <h:form id="frmperro">
             <p:panel header="Formulario de Registro de Perros">
-                <p>Formulario</p>
+                <p:panelGrid columns="2">
+
+                    <h:outputText value="Número"/>
+                    <p:spinner value="#{listaSEController.perroEncontrado.numero}" min="1" required="true"/>
+                    <h:outputText value="Nombre"/>
+                    <p:inputText value="#{listaSEController.perroEncontrado.nombre}" required="true" />
+                    <h:outputText value="Edad"/>
+                    <p:spinner value="#{listaSEController.perroEncontrado.edad}" required="true" min="1 "/>
+                    <p:outputLabel value="Sexo"/>
+                    <p:inputText value="#{listaSEController.perroEncontrado.sexo}" required="true" />
+                    
+                    <p:commandButton value="Guardar" update="frmperro" action="#{listaSEController.guardarPerro()}" />
+                    <p:commandButton value="Limpiar" update="frmperro" action="#{listaSEController.irCrearPerro()}"/>
+                    
+                </p:panelGrid>
             </p:panel>
         </h:form>
     </ui:define>

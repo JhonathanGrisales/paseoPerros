@@ -24,6 +24,7 @@
             <groupId>co.edu.umanizales.listase</groupId>
             <artifactId>ListaSE</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
