@@ -6,27 +6,28 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <ui:define name="titulo_perros">
+    <ui:define name="titulo_perrosDE">
         Paseando Perros - Formulario
     </ui:define>
 
     <ui:define name="content">
-        <h:form id="frmperro" prependId="false">
-            <p:panel header="Formulario de Registro de Perros SE">
+        <h:form id="frmperroDE" prependId="false">
+            <p:panel id="datos" header="Formulario de Registro de Perros DE">
 
                 <p:growl id="errores"/>
                 <p:panelGrid columns="2">
 
                     <h:outputText value="Número"/>
-                    <p:spinner value="#{listaSEController.perroEncontrado.numero}" min="1" required="true"/>
+                    <p:spinner value="#{listaDEController.perroEncontradoDE.numero}" min="1" required="true"/>
                     <h:outputText value="Nombre"/>
-                    <p:inputText id="Nombre" value="#{listaSEController.perroEncontrado.nombre}" required="true" />
+                    <p:inputText id="Nombre" value="#{listaDEController.perroEncontradoDE.nombre}" required="true" />
                     <h:outputText value="Edad"/>
-                    <p:spinner value="#{listaSEController.perroEncontrado.edad}" required="true" min="1 "/>
+                    <p:spinner value="#{listaDEController.perroEncontradoDE.edad}" required="true" min="1 "/>
+                    
                   
                     <p:outputLabel value="Sexo"/>
 
-                    <p:selectOneMenu id="Sexo"  required="true" value="#{listaSEController.perroEncontrado.sexo}" >
+                    <p:selectOneMenu  required="true" value="#{listaDEController.perroEncontradoDE.sexo}" >
 
                         <f:selectItem itemLabel="Seleccione uno" itemEscaped="true"  />
                         <f:selectItem itemValue="M" itemLabel="Masculino" />
@@ -36,7 +37,7 @@
 
                     <p:outputLabel value="Ubicación"/>
 
-                    <p:selectOneMenu id="Ubicacion" required="true" value="#{listaSEController.seleccionUbicacion}" >
+                    <p:selectOneMenu  value="#{listaDEController.seleccionUbicacionDE}"   >
 
                         <f:selectItem itemLabel="Seleccione uno" itemEscaped="true"  />
                         <f:selectItem itemValue="1" itemLabel="Al inicio" />
@@ -45,16 +46,22 @@
 
                     </p:selectOneMenu>
 
-                    <p:commandButton value="Guardar" update="frmperro,errores" action="#{listaSEController.guardarPerro()}" />
-                    <p:commandButton value="Limpiar" update="frmperro,errores" action="#{listaSEController.irCrearPerro()}"/>
-                    
+                    <p:commandButton value="Guardar" update="frmperroDE,errores" action="#{listaDEController.guardarPerroDE()}" resetValues="true" />
+                    <p:commandButton value="Limpiar" update="frmperroDE,errores" action="#{listaDEController.irCrearPerroDE()}" resetValues="true" >
+                                       
+                    </p:commandButton>
+     
                     <h:outputText  value="Posicion"/>
-                    <p:spinner value="#{listaSEController.posicionAgregar}" required="true" min="1 "  max="#{listaSEController.listaPerros.contarNodos()}"/>
+                    <p:spinner value="#{listaDEController.posicion}" required="true" min="1 "  max="#{listaDEController.listaPerrosDE.contarNodosDE()}"/>
                     
-
+                    
                 </p:panelGrid>
             </p:panel>
         </h:form>
+        
+        
+        
     </ui:define>
 
 </ui:composition>
+

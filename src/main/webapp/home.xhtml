@@ -16,11 +16,12 @@
 
 
         <h:form id="Formulario" >
+            <p:growl id="erroresHome"/>
 
 
 
 
-            <p:panel id="panelPerros" header="Listado perros ::: #{listaSEController.listaPerros.contarNodos()}">
+            <p:panel id="panelPerros" header="Listado perros SE ::: #{listaSEController.listaPerros.contarNodos()}">
 
                 <p:panelGrid columns="2"  >
                     <p:outputLabel value="Número"/>
@@ -32,6 +33,7 @@
                     <p:outputLabel value="Sexo"/>
                     <p:outputLabel value="#{listaSEController.perroMostrar.sexo}"/>
                 </p:panelGrid>
+
                 <p:panelGrid columns="3" id="panel" >
                     <p:commandButton value="Primero" disabled="#{listaSEController.temp == listaSEController.listaPerros.cabeza}" >
                         <p:ajax listener="#{listaSEController.irPrimero()}" update="panelPerros"  />
@@ -44,11 +46,11 @@
                     </p:commandButton>
 
                     <p:commandButton value="Invertir Lista">
-                        <p:ajax listener="#{listaSEController.invertir()}" update="panelPerros"/>
+                        <p:ajax listener="#{listaSEController.invertir()}" update="panelPerros,erroresHome,grafica"/>
                     </p:commandButton>
 
                     <p:commandButton value="Intercambiar extremos">
-                        <p:ajax listener="#{listaSEController.intercambiar()}" update="panelPerros,grafica"/>
+                        <p:ajax listener="#{listaSEController.intercambiar()}" update="panelPerros,grafica,erroresHome"/>
                     </p:commandButton>
 
                     <p:column>
@@ -56,7 +58,6 @@
                     </p:column>
 
                     <p:column>
-                        <p:outputLabel  value="Borrar por ID" />
 
                     </p:column>
 
@@ -64,21 +65,9 @@
 
                     </p:column>
 
-                    <p:column></p:column>
+                    <p:column>
 
-                    <p:commandButton value="Borrar" disabled="#{listaSEController.listaPerros.contarNodos() == 1}"  >
-
-                        <p:growl id="errores"/>
-
-                        <p:ajax listener="#{listaSEController.borrarId()}" update="errores,panelPerros,grafica,buscarPos" resetValues="true" />
-
-                        <p:spinner value="#{listaSEController.borrar}" min="1"  max="100"
-                                   id="Borrar" required="true" immediate="false" placeholder="Ingrese ID *" />
-
-                    </p:commandButton>
-
-
-
+                    </p:column>
 
                 </p:panelGrid>          
 
@@ -91,17 +80,18 @@
         </h:form>
 
         <h:form id="buscarPos">
-            <p:panel header="Buscar Perro x Posicion">
+            <p:panel id="buscar" header="Buscar Perro x Posicion">
                 <p:outputLabel value="Ingresar la posición a buscar"/>
                 <p:spinner id="datoBuscar" value="#{listaSEController.datoBuscar}" min="1" max="#{listaSEController.listaPerros.contarNodos()}"/>
                 <p:commandButton value="Buscar" update="pnlPerroEnc,grafica" action="#{listaSEController.buscarPerro()}" 
-                                 oncomplete="PF('dlgPerroEnc').show()" >
+                                 oncomplete="PF('dlgPerroEnc').show()" disabled="#{listaSEController.listaPerros.contarNodos()== 0}">
                 </p:commandButton>
 
                 <p:column>
                     <h:outputLabel value="  Limpiar diagrama: " />
 
-                    <p:commandButton value=" Limpiar" update="pnlPerroEnc,grafica" action="#{listaSEController.inicializarModelo()}"> 
+                    <p:commandButton value=" Limpiar" update="pnlPerroEnc,grafica" action="#{listaSEController.inicializarModelo()}"
+                                     disabled="#{listaSEController.listaPerros.contarNodos()==0}"> 
 
                     </p:commandButton>
 
@@ -119,12 +109,6 @@
                         <h:outputText value="#{listaSEController.perroEncontrado.numero}" />
                         <h:outputText value="Genero:" />
                         <h:outputText value="#{listaSEController.perroEncontrado.sexo}" />
-
-
-
-
-
-
                     </h:panelGrid>
 
 
@@ -136,11 +120,57 @@
 
         </h:form>
 
+
+        <h:form id="frmAcciones">
+            <p:panel id="panelAcciones" header="Acciones">
+                <p:panelGrid columns="2" >
+
+                    <p:column>
+                        <h:outputLabel value="INGRESE POSICIÓN 1  ::::::::::   INGRESE POSICIÓN 2 "  />
+                    </p:column>
+
+                    <p:column>
+
+                    </p:column>
+
+                    <p:column>
+                        <p:commandButton value=" Intercambiar Posición" disabled="#{listaSEController.listaPerros.contarNodos()==0}"> 
+
+                            <p:ajax listener="#{listaSEController.intercambiarPosicionesDadasSE()}" 
+                                    update="grafica,frmAcciones,Formulario:panelPerros,buscarPos:buscar" resetValues="true" />
+                            <p:spinner  value="#{listaSEController.posicionUno}" min="1" max="#{listaSEController.listaPerros.contarNodos()}"/>
+                            <p:spinner  value="#{listaSEController.posicionDos}" min="1" max="#{listaSEController.listaPerros.contarNodos()}"/>
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                    <p:column>
+
+                        <p:commandButton value="Borrar por Posición" disabled="#{listaSEController.listaPerros.contarNodos() == 0}"  >
+                            <p:ajax listener="#{listaSEController.eliminarxPosicion()}"
+                                    update="grafica,frmAcciones,Formulario:panelPerros,buscarPos:buscar" resetValues="true" />
+                            <p:spinner value="#{listaSEController.borrar}" min="1"  max="#{listaSEController.listaPerros.contarNodos()}"
+                                       id="Borrar" required="true" immediate="false" placeholder="Ingrese ID *" />
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:panelGrid >
+
+            </p:panel> 
+
+
+        </h:form>
+
+
+
+
         <h:form id="grafica">
 
             <p:menubar>
 
-                <p:submenu label="Selección" icon="pi pi-briefcase">
+                <p:submenu label="Ordenar por sexo" icon="pi pi-briefcase">
                     <p:menuitem value="Machos" ajax="false" action="#{listaSEController.ordenarMacho()}"    update="Formulario,grafica,buscarPos"/>
                     <p:menuitem value="Hembras" ajax="false" action="#{listaSEController.ordenarHembra()}" update="Formulario,grafica,buscarPos" />
 

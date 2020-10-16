@@ -11,6 +11,7 @@ import co.edu.umanizales.listase.modelo.Perro;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.util.GregorianCalendar;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -50,9 +51,17 @@ public class ListaSEController implements Serializable {
 
     private int datoBuscar;
 
+    private int posicionUno;
+
+    private int posicionDos;
+
+    private int posicionAgregar;
+
     private Perro perroEncontrado;
 
     private DefaultDiagramModel model;
+
+    private int seleccionUbicacion = 0;
 
     /**
      * Creates a new instance of ListaSEController
@@ -64,12 +73,12 @@ public class ListaSEController implements Serializable {
     private void iniciar() {
         listaPerros = new ListaSE();
         //// Conectaría a un archivo plano o a una base de datos para llenar la 
-        //lista de perros
+//        lista de perros
         listaPerros.adicionarNodo(new Perro("Pastor", (byte) 1, (byte) 3, "M"));
         listaPerros.adicionarNodo(new Perro("Lulú", (byte) 2, (byte) 4, "F"));
         listaPerros.adicionarNodo(new Perro("Firulais", (byte) 3, (byte) 6, "M"));
         listaPerros.adicionarNodo(new Perro("Luki", (byte) 5, (byte) 9, "M"));
-
+//
         listaPerros.adicionarNodoAlInicio(new Perro("Lola", (byte) 4, (byte) 5, "F"));
         perroMostrar = listaPerros.getCabeza().getDato();
         temp = listaPerros.getCabeza();
@@ -121,6 +130,22 @@ public class ListaSEController implements Serializable {
         return datoBuscar;
     }
 
+    public int getPosicionUno() {
+        return posicionUno;
+    }
+
+    public void setPosicionUno(int posicionUno) {
+        this.posicionUno = posicionUno;
+    }
+
+    public int getPosicionDos() {
+        return posicionDos;
+    }
+
+    public void setPosicionDos(int posicionDos) {
+        this.posicionDos = posicionDos;
+    }
+
     public void setDatoBuscar(int datoBuscar) {
         this.datoBuscar = datoBuscar;
     }
@@ -133,17 +158,46 @@ public class ListaSEController implements Serializable {
         this.perroEncontrado = perroEncontrado;
     }
 
+    public int getSeleccionUbicacion() {
+        return seleccionUbicacion;
+    }
+
+    public void setSeleccionUbicacion(int seleccionUbicacion) {
+        this.seleccionUbicacion = seleccionUbicacion;
+    }
+
+    public int getPosicionAgregar() {
+        return posicionAgregar;
+    }
+
+    public void setPosicionAgregar(int posicionAgregar) {
+        this.posicionAgregar = posicionAgregar;
+    }
+
     public void irSiguiente() {
-        //if(temp.getSiguiente()!=null)
-        //{
-        temp = temp.getSiguiente();
-        perroMostrar = temp.getDato();
-        //}
+
+        if (listaPerros.getCabeza() != null) {
+
+            temp = temp.getSiguiente();
+            perroMostrar = temp.getDato();
+        } else {
+
+            JsfUtil.addErrorMessage("Si datos");
+        }
+
     }
 
     public void irPrimero() {
-        temp = listaPerros.getCabeza();
-        perroMostrar = temp.getDato();
+
+        if (listaPerros.getCabeza() != null) {
+            temp = listaPerros.getCabeza();
+            perroMostrar = temp.getDato();
+
+        } else {
+
+            JsfUtil.addErrorMessage("No existen datos en la lista");
+        }
+
     }
 
     public void irUltimo() {
@@ -159,6 +213,7 @@ public class ListaSEController implements Serializable {
     public void invertir() {
         listaPerros.invertir();
         irPrimero();
+        inicializarModelo();
     }
 
     public void intercambiar() {
@@ -191,19 +246,85 @@ public class ListaSEController implements Serializable {
     }
 
     public void ordenarMacho() {
-        
-        
 
-        listaPerros.ordenarMasculino();
-        irPrimero();
-        inicializarModelo();
+        if (listaPerros.getCabeza() != null) {
+
+            int cont = 0;
+            temp = listaPerros.getCabeza();
+
+            while (temp != null && cont <= 1) {
+
+                if (temp.getDato().getSexo().equals("M")) {
+                    cont = 1;
+                }
+                temp = temp.getSiguiente();
+            }
+
+            temp = listaPerros.getCabeza();
+
+            if (cont == 0) {
+
+                JsfUtil.addErrorMessage("No hay Machos");
+
+            } else if (cont >= 1 && temp.getSiguiente() != null) {
+
+                listaPerros.ordenarMasculino();
+                irPrimero();
+                inicializarModelo();
+
+            } else if (cont == 1 && temp.getSiguiente() == null) {
+
+                JsfUtil.addErrorMessage("Solo hay un elemento");
+
+            }
+
+        } else {
+
+            JsfUtil.addErrorMessage("No hay Elementos");
+        }
+
     }
 
     public void ordenarHembra() {
 
-        listaPerros.ordenarFemenino();
-        irPrimero();
-        inicializarModelo();
+        if (listaPerros.getCabeza() != null) {
+
+            int cont = 0;
+            temp = listaPerros.getCabeza();
+
+            while (temp != null && cont <= 1) {
+
+                if (temp.getDato().getSexo().equals("F")) {
+                    cont = 1;
+
+                }
+
+                temp = temp.getSiguiente();
+            }
+
+            temp = listaPerros.getCabeza();
+
+            if (cont == 0) {
+
+                JsfUtil.addErrorMessage("No hay Hembras");
+
+            } else if (cont >= 1 && temp.getSiguiente() != null) {
+
+                listaPerros.ordenarFemenino();
+                irPrimero();
+                inicializarModelo();
+
+            } else if (cont == 1 && temp.getSiguiente() == null) {
+
+                JsfUtil.addErrorMessage("Solo hay un elemento");
+
+            }
+
+        } else {
+
+            JsfUtil.addErrorMessage("No hay Elementos");
+        }
+
     }
 
     public void mostrarMensaje() {
@@ -213,81 +334,48 @@ public class ListaSEController implements Serializable {
         context.addMessage(null, new FacesMessage("Elemento no encontrado"));
     }
 
-    public void borrarId() {
+    public void eliminarxPosicion() {
 
-        temp = listaPerros.getCabeza();
+        if (temp.getSiguiente() != null) {
 
-        while (temp != null && temp.getDato().getNumero() != borrar) {
+            listaPerros.eliminarPorPosicion(borrar);
+            JsfUtil.addSuccessMessage("Se Elimino con exito");
+            irPrimero();
+            inicializarModelo();
 
-            temp = temp.getSiguiente();
+        } else if (temp.getSiguiente() == null && listaPerros.contarNodos() == 1) {
+
+            listaPerros.eliminarPorPosicion(borrar);
+            JsfUtil.addSuccessMessage("Se Elimino con exito");
+            perroMostrar = null;
+            inicializarModelo();
+        } else {
+
+            listaPerros.eliminarPorPosicion(borrar);
+            JsfUtil.addSuccessMessage("Se Elimino con exito");
+            irPrimero();
             inicializarModelo();
         }
 
-        if (temp != null && temp.getDato().getNumero() == borrar) {
+    }
 
-            listaPerros.eliminarNodoporId(borrar);
+    public void intercambiarPosicionesDadasSE() {
+
+        if (posicionUno == posicionDos) {
+
+            JsfUtil.addErrorMessage("Las dos posiciones son iguales");
+
+        } else {
+
+            listaPerros.intercambiarPosicionesSE(posicionUno, posicionDos);
             irPrimero();
             inicializarModelo();
-
-        } else if (temp == null) {
-
-            mostrarMensaje();
-            irPrimero();
         }
 
     }
 
     public void inicializarModelo() {
 
-//        model = new DefaultDiagramModel();
-//        model.setMaxConnections(-1);
-//
-//        FlowChartConnector connector = new FlowChartConnector();
-//        connector.setPaintStyle("{strokeStyle:'#C7B097',lineWidth:3}");
-//        model.setDefaultConnector(connector);
-//
-//        Element[] elemento;
-//
-//        for (int i = 1; i < listaPerros.contarNodos() + 1; i++) {
-//
-//            elemento = new Element[listaPerros.contarNodos() + 1];
-//
-//            elemento[i] = new Element(listaPerros.buscarPosicion(i).getNombre(), String.valueOf(16 * (i - 1)) + "em", "6em");
-//            elemento[i].addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-//            elemento[i].addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
-//            
-//
-//            model.addElement(elemento[i]);
-//
-//            model.connect(createConnection(elemento[1].getEndPoints().get(0), elemento[2].getEndPoints().get(0), null));
-//        }
-//
-//            
-//            Element start = new Element(listaPerros.buscarPosicion(i).getNombre(), "0em", "6em");
-//            start.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
-//
-//            Element trouble = new Element(listaPerros.buscarPosicion(i).getNombre(), "20em", "6em");
-//            trouble.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-//            trouble.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
-//
-//            
-//            Element giveup = new Element(listaPerros.buscarPosicion(i).getNombre(), "40em", "6em");
-//            giveup.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-//            giveup.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
-//
-//            Element succeed = new Element(listaPerros.buscarPosicion(i).getNombre(), "60em", "6em");
-//
-//            succeed.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-//
-//            model.addElement(start);
-//            model.addElement(trouble);
-//            model.addElement(giveup);
-//            model.addElement(succeed);
-//
-//            model.connect(createConnection(start.getEndPoints().get(0), trouble.getEndPoints().get(0), null));
-//            model.connect(createConnection(trouble.getEndPoints().get(1), giveup.getEndPoints().get(0), null));
-//            model.connect(createConnection(giveup.getEndPoints().get(1), succeed.getEndPoints().get(0), null));
-//Instanciar el modelo
         model = new DefaultDiagramModel();
         //Definir el modelo la cantidad de enlaces -1 (Infinito)
         model.setMaxConnections(-1);
@@ -329,47 +417,6 @@ public class ListaSEController implements Serializable {
             }
         }
 
-        /*
-
-        FlowChartConnector connector = new FlowChartConnector();
-        connector.setPaintStyle("{strokeStyle:'#C7B097',lineWidth:3}");
-        model.setDefaultConnector(connector);
-
-        Element start = new Element("Fight for your dream", "20em", "6em");
-        start.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM));
-        start.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-
-        Element trouble = new Element("Do you meet some trouble?", "20em", "18em");
-        trouble.addEndPoint(new BlankEndPoint(EndPointAnchor.TOP));
-        trouble.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM));
-        trouble.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
-
-        Element giveup = new Element("Do you give up?", "20em", "30em");
-        giveup.addEndPoint(new BlankEndPoint(EndPointAnchor.TOP));
-        giveup.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-        giveup.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
-
-        Element succeed = new Element("Succeed", "50em", "18em");
-        succeed.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-        succeed.setStyleClass("ui-diagram-success");
-
-        Element fail = new Element("Fail", "50em", "30em");
-        fail.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-        fail.setStyleClass("ui-diagram-fail");
-
-        model.addElement(start);
-        model.addElement(trouble);
-        model.addElement(giveup);
-        model.addElement(succeed);
-        model.addElement(fail);
-
-        model.connect(createConnection(start.getEndPoints().get(0), trouble.getEndPoints().get(0), null));
-        model.connect(createConnection(trouble.getEndPoints().get(1), giveup.getEndPoints().get(0), "Yes"));
-        model.connect(createConnection(giveup.getEndPoints().get(1), start.getEndPoints().get(1), "No"));
-        model.connect(createConnection(trouble.getEndPoints().get(2), succeed.getEndPoints().get(0), "No"));
-        model.connect(createConnection(giveup.getEndPoints().get(2), fail.getEndPoints().get(0), "Yes"));
-    
-         */
     }
 
     public DiagramModel getModel() {
@@ -390,14 +437,39 @@ public class ListaSEController implements Serializable {
     public String irCrearPerro() {
 
         perroEncontrado = new Perro();
+        posicionAgregar = 1;
+        seleccionUbicacion = 0;
         return "crear";
     }
 
     public void guardarPerro() {
 
-        
-        listaPerros.adicionarNodo(perroEncontrado);
+        switch (seleccionUbicacion) {
+
+            case 1:
+                listaPerros.adicionarNodoAlInicio(perroEncontrado);
+                posicionAgregar = 1;
+                seleccionUbicacion = 0;
+                break;
+            case 2:
+                listaPerros.adicionarNodo(perroEncontrado);
+                posicionAgregar = 1;
+                seleccionUbicacion = 0;
+                break;
+            case 3:
+                listaPerros.agregarEnPosicionSE(perroEncontrado, posicionAgregar);
+                posicionAgregar = 1;
+                seleccionUbicacion = 0;
+                break;
+            default:
+                listaPerros.adicionarNodo(perroEncontrado);
+                posicionAgregar = 1;
+                seleccionUbicacion = 0;
+
+        }
+
         perroEncontrado = new Perro();
+        JsfUtil.addSuccessMessage("Se ha adicionado el perro a la lista");
         irPrimero();
 
     }

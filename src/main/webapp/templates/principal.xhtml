@@ -7,8 +7,8 @@
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <h:outputStylesheet name="resources/css/default.css"/>
-        <h:outputStylesheet name="resources/css/cssLayout.css"/>
+        <!-- <h:outputStylesheet name="/resources/css/default.css"/>
+        <h:outputStylesheet name="/resources/css/cssLayout.css"/> -->
         <title>
             <ui:insert name="titulo_perros">            
             </ui:insert>
@@ -58,8 +58,12 @@
                     <p:menubar>
                         <p:submenu label="Inicio" icon="pi pi-file">
                             <p:submenu label="Gestión Perros" icon="pi pi-briefcase">
-                                <p:menuitem value="Listar Perros"  action="#{listaSEController.irHome()}" ajax="false" />
-                                <p:menuitem value="Ingresar Perro" action="#{listaSEController.irCrearPerro()}" />
+                                <p:menuitem value="Listar Perros SE"  action="#{listaSEController.irHome()}" ajax="false" />
+                                <p:menuitem value="Listar Perros DE" action="#{listaDEController.irHomeDE()}" ajax="false" />
+                                <p:menuitem value="Ingresar Perro SE" action="#{listaSEController.irCrearPerro()}" />
+                                <p:menuitem value="Ingresar Perro DE" action="#{listaDEController.irCrearPerroDE()}" />
+                                
+                                
                             </p:submenu>
                             <p:menuitem value="Open" url="#" />
                             <p:separator />
