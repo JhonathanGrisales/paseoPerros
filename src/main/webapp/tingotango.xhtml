@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./templates/principal.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+
+    <ui:define name="titulo_perrosDEC">
+        TINGO TANGO - LISTA DEC
+
+    </ui:define>
+
+    <ui:define name="content">
+
+
+        <h:form id="frmTingoTngo" >
+            <p:growl id="erroresTingoTango"/>
+            
+                <p:dashboard id="board" model="#{controladorTingoTango.model}" >
+                 
+                    <p:panel id="acciones" header="ACCIONES JUEGO" style="border: #045491" >
+                        <h:panelGrid columns="3" cellpadding = "10" cellspacing = "1" style="height: 50px " >
+
+                            <p:commandButton value="CONFIGURAR JUEGO" style="color: #045491" update="pnlConfigurar"
+                                             oncomplete="PF('dlgConfigurar').show()" >
+                                
+                                
+                            </p:commandButton>
+                            
+                            
+                            <p:selectOneMenu   >
+
+                                <f:selectItem itemLabel="REINGRESO POR GENERO" itemEscaped="true"  />
+                                <f:selectItem itemValue="M" itemLabel="REINGRESO NIÑOS" />
+                                <f:selectItem itemValue="F" itemLabel="REINGRESO NIÑAS"/>
+
+                            </p:selectOneMenu>
+
+                            <p:column></p:column>
+
+
+                            <p:commandButton value="INICIO DERECHA" style="color: #045491 " >
+                            </p:commandButton>
+
+
+                            <p:selectOneMenu    >
+
+                                <f:selectItem itemLabel="RETIRAR POR GENERO" itemEscaped="true"  />
+                                <f:selectItem itemValue="M" itemLabel="RETIRAR NIÑOS" />
+                                <f:selectItem itemValue="F" itemLabel="RETIRAR NIÑAS"/>
+
+                            </p:selectOneMenu>
+
+                            <p:column></p:column>
+
+                            <p:commandButton value="INICIO IZQUIERDA" style="color: #045491" >
+
+                            </p:commandButton> 
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+
+                    <p:panel id="lista" header="LISTA NIÑOS:: #{controladorTingoTango.contarInfantes()}" style="border: #045491"  >
+                        <p:dataTable   style="width: 900px" var="Infante" value="#{controladorTingoTango.listadoInfantes}">
+                            <p:column headerText="NOMBRE">
+                                <h:outputText value="#{Infante.nombre}" />
+                            </p:column>
+
+                            <p:column headerText="ID">
+                                <h:outputText value="#{Infante.identificador}" />
+                            </p:column>
+                            
+                            <p:column headerText="GENERO">
+                                <h:outputText value="#{Infante.genero}" />
+                            </p:column>
+
+                            <p:column headerText="FUNCIÓN">
+                                <p:commandButton  value="REINGRESAR">
+
+
+                                </p:commandButton>
+                            </p:column>
+
+                            <p:column headerText="# OPORTUNIDADES">
+                                <p:spinner min="1" max="10" >
+
+
+                                </p:spinner>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+
+                   
+
+                </p:dashboard>
+            
+            
+            <p:dialog header="CONFIGURAR " widgetVar="dlgConfigurar" modal="true" height="200"  closeOnEscape="true">
+                <p:panel id="pnlConfigurar" header="Datos juego">
+                    <h:panelGrid columns="2">
+                        
+                        <h:outputText value="Numero de niños:" />
+                        <p:spinner value="#{controladorTingoTango.cantidadInfantes}" min="2" max="127"/>
+                        <h:outputText value="Numero de oportunidades:" />
+                        <p:spinner value="#{controladorTingoTango.numOportunidades}" min="1" max="127"/>
+                        
+                        
+                        
+                        <p:commandButton value="Guardar" action="#{controladorTingoTango.configurarJuego()}" update="frmTingoTngo" >
+                         
+                        </p:commandButton>
+                        
+                         <p:commandButton value="Limpiar" >
+                            
+                            
+                        </p:commandButton>
+                        
+                        
+                    </h:panelGrid>
+
+
+
+                </p:panel>
+            </p:dialog>
+
+
+        </h:form>
+        
+        <h:form>
+        
+        </h:form>
+        
+       
+
+
+
+
+    </ui:define>
+</ui:composition>

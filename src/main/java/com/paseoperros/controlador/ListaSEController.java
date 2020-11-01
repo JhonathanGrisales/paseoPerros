@@ -12,10 +12,12 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.GregorianCalendar;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import static javax.swing.text.html.HTML.Attribute.N;
 import org.primefaces.model.diagram.Connection;
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.DiagramModel;
@@ -57,11 +59,15 @@ public class ListaSEController implements Serializable {
 
     private int posicionAgregar;
 
+    private int totalPerros = 0;
+
     private Perro perroEncontrado;
 
     private DefaultDiagramModel model;
 
     private int seleccionUbicacion = 0;
+
+    private byte aleatorio = (byte) ((int) (Math.random() * (100 - 2) + 2));
 
     /**
      * Creates a new instance of ListaSEController
@@ -74,14 +80,15 @@ public class ListaSEController implements Serializable {
         listaPerros = new ListaSE();
         //// Conectaría a un archivo plano o a una base de datos para llenar la 
 //        lista de perros
-        listaPerros.adicionarNodo(new Perro("Pastor", (byte) 1, (byte) 3, "M"));
-        listaPerros.adicionarNodo(new Perro("Lulú", (byte) 2, (byte) 4, "F"));
-        listaPerros.adicionarNodo(new Perro("Firulais", (byte) 3, (byte) 6, "M"));
-        listaPerros.adicionarNodo(new Perro("Luki", (byte) 5, (byte) 9, "M"));
+//        listaPerros.adicionarNodo(new Perro("Pastor", (byte) ((int) (Math.random() * (100 - 2) + 2)), (byte) 3, "M"));
+//        listaPerros.adicionarNodo(new Perro("Lulú", (byte) ((int) (Math.random() * (100 - 2) + 2)), (byte) 4, "F"));
+//        listaPerros.adicionarNodo(new Perro("Firulais", (byte) ((int) (Math.random() * (100 - 2) + 2)), (byte) 6, "M"));
+//        listaPerros.adicionarNodo(new Perro("Luki", ((byte) ((int) (Math.random() * (100 - 2) + 2))), (byte) 9, "M"));
 //
-        listaPerros.adicionarNodoAlInicio(new Perro("Lola", (byte) 4, (byte) 5, "F"));
-        perroMostrar = listaPerros.getCabeza().getDato();
-        temp = listaPerros.getCabeza();
+
+//        perroMostrar = listaPerros.getCabeza().getDato();
+//        temp = listaPerros.getCabeza();
+        totalPerros = listaPerros.contarNodos();
         inicializarModelo();
 
     }
@@ -172,6 +179,22 @@ public class ListaSEController implements Serializable {
 
     public void setPosicionAgregar(int posicionAgregar) {
         this.posicionAgregar = posicionAgregar;
+    }
+
+    public int getTotalPerros() {
+        return totalPerros;
+    }
+
+    public void setTotalPerros(int totalPerros) {
+        this.totalPerros = totalPerros;
+    }
+
+    public byte getAleatorio() {
+        return aleatorio;
+    }
+
+    public void setAleatorio(byte aleatorio) {
+        this.aleatorio = aleatorio;
     }
 
     public void irSiguiente() {
@@ -390,6 +413,7 @@ public class ListaSEController implements Serializable {
             while (ayudante != null) {
 
                 Element perroPintar = new Element(ayudante.getDato().getNombre(), posX + "em", posY + "em");
+               
 
 //                if (ayudante.getDato().getNombre().toLowerCase().startsWith("p")) {
 //                    perroPintar.setStyleClass("ui-diagram-success");
@@ -398,6 +422,7 @@ public class ListaSEController implements Serializable {
                 perroPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
 
                 model.addElement(perroPintar);
+                
 
                 ayudante = ayudante.getSiguiente();
                 posX = posX + 5;
@@ -442,32 +467,48 @@ public class ListaSEController implements Serializable {
         return "crear";
     }
 
+    public byte crearAleatorio() {
+
+        aleatorio = ((byte) ((int) (Math.random() * (100 - 2) + 2)));
+        return aleatorio;
+
+    }
+
     public void guardarPerro() {
+
+        perroEncontrado.setNumero(aleatorio);
 
         switch (seleccionUbicacion) {
 
             case 1:
+
                 listaPerros.adicionarNodoAlInicio(perroEncontrado);
                 posicionAgregar = 1;
                 seleccionUbicacion = 0;
+                aleatorio = crearAleatorio();
+
                 break;
             case 2:
                 listaPerros.adicionarNodo(perroEncontrado);
                 posicionAgregar = 1;
                 seleccionUbicacion = 0;
+                aleatorio = crearAleatorio();
                 break;
             case 3:
                 listaPerros.agregarEnPosicionSE(perroEncontrado, posicionAgregar);
                 posicionAgregar = 1;
                 seleccionUbicacion = 0;
+                aleatorio = crearAleatorio();
                 break;
             default:
                 listaPerros.adicionarNodo(perroEncontrado);
                 posicionAgregar = 1;
                 seleccionUbicacion = 0;
+                aleatorio = crearAleatorio();
 
         }
 
+        totalPerros++;
         perroEncontrado = new Perro();
         JsfUtil.addSuccessMessage("Se ha adicionado el perro a la lista");
         irPrimero();

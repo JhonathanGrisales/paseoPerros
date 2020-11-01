@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./templates/principal.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="titulo_niños">
+        Tingo tango - Formulario
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="frmniño" prependId="false">
+            <p:panel header="Formulario de Registro de niños">
+
+                <p:growl id="errorniño"/>
+                <p:panelGrid columns="2">
+
+                    
+                    
+                    
+                    <h:outputText value="Nombre"/>
+                    <p:inputText  value="#{controladorTingoTango.infanteGuardar.nombre}" required="true" />
+                    
+                    <h:outputText value="Identificador" />
+                    <p:spinner value="#{controladorTingoTango.infanteGuardar.identificador}" required="true" min="1" max="127"/>
+                    
+                  
+                    <p:outputLabel value="Sexo"/>
+
+                    <p:selectOneMenu id="Sexo"  required="true" value="#{controladorTingoTango.infanteGuardar.genero}" >
+
+                        <f:selectItem itemLabel="Seleccione uno" itemEscaped="true"  />
+                        <f:selectItem itemValue="Masculino" itemLabel="Masculino" />
+                        <f:selectItem itemValue="Femenino" itemLabel="Femenino"/>
+
+                    </p:selectOneMenu>
+
+                    
+
+                    <p:commandButton value="Guardar" update="frmniño,errorniño" action="#{controladorTingoTango.adicionarArray()}" />
+                    <p:commandButton value="Limpiar" update="frmniño,errorniño" action="#{controladorTingoTango.irCrearNiño()}"/>
+                    
+                    
+                    
+
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

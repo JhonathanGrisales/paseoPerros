@@ -57,17 +57,21 @@
                 <h:form >
                     <p:menubar>
                         <p:submenu label="Inicio" icon="pi pi-file">
-                            <p:submenu label="Gestión Perros" icon="pi pi-briefcase">
-                                <p:menuitem value="Listar Perros SE"  action="#{listaSEController.irHome()}" ajax="false" />
-                                <p:menuitem value="Listar Perros DE" action="#{listaDEController.irHomeDE()}" ajax="false" />
-                                <p:menuitem value="Ingresar Perro SE" action="#{listaSEController.irCrearPerro()}" />
-                                <p:menuitem value="Ingresar Perro DE" action="#{listaDEController.irCrearPerroDE()}" />
+                            <p:submenu label="Gestión Tingo tango" icon="pi pi-briefcase">
+                                
+                                 
+                                
+                                <p:menuitem value="TINGO TANGO" action="#{controladorTingoTango.irHome()}" />
+                                <p:menuitem value="INGRESAR NIÑO" action="#{controladorTingoTango.irCrearNiño()}" />
+                                
+                                
+                                
                                 
                                 
                             </p:submenu>
-                            <p:menuitem value="Open" url="#" />
+                            <p:menuitem value="N/A" url="#" />
                             <p:separator />
-                            <p:menuitem value="Quit" url="#" />
+                            <p:menuitem value="N/A" url="#" />
                         </p:submenu>
                     </p:menubar>
                 </h:form>
@@ -81,6 +85,7 @@
         </div>
 
         <div id="bottom">
+            
             <center>
                 <h:graphicImage url="/resources/imagenes/logo.png" width="200"/>
                 <ui:insert name="bottom">

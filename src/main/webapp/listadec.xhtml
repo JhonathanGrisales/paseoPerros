@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./templates/principal.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+
+    <ui:define name="titulo_perrosDEC">
+        Paseando Perros - Listado DEC
+
+    </ui:define>
+
+    <ui:define name="content">
+
+
+        <h:form id="FormularioDEC" >
+            <p:growl id="erroresHomeDEC"/>
+            <p:panel id="panelPerrosDEC" header="Listado perros DE CIRCULAR ::: #{listaDECircularCrontroller.listaPerrosDEC.contarNodosDEC()} ">
+                <p:panelGrid columns="2"  >
+                    <p:outputLabel value="Número"/>
+                    <p:outputLabel value="#{listaDECircularCrontroller.perroMostrarDEC.numero}"/>
+                    <p:outputLabel value="Nombre"/>
+                    <p:outputLabel value="#{listaDECircularCrontroller.perroMostrarDEC.nombre}"/>
+                    <p:outputLabel value="Edad"/>
+                    <p:outputLabel value="#{listaDECircularCrontroller.perroMostrarDEC.edad}"/>
+                    <p:outputLabel value="Sexo"/>
+                    <p:outputLabel value="#{listaDECircularCrontroller.perroMostrarDEC.sexo}"/>
+                </p:panelGrid>
+
+                <p:panelGrid columns="4" id="panel" >
+                    <p:commandButton value="Primero" disabled="#{listaDECircularCrontroller.tempDEC == listaDECircularCrontroller.listaPerrosDEC.cabezaDeC}" >
+                        <p:ajax listener="#{listaDECircularCrontroller.irPriemroDeC()}" update="panelPerrosDEC"  />
+                    </p:commandButton>
+
+                    <p:commandButton value="Anterior" disabled="" >
+                        <p:ajax listener="#{listaDECircularCrontroller.irAnterior()}" update="panelPerrosDEC"/>
+
+                    </p:commandButton>
+                    <p:commandButton value="Siguiente" disabled="" >
+                        <p:ajax listener="#{listaDECircularCrontroller.irSiguiente()}" update="panelPerrosDEC"/> 
+                    </p:commandButton>
+                    <p:commandButton value="Último" disabled="#{listaDECircularCrontroller.tempDEC == listaDECircularCrontroller.listaPerrosDEC.cabezaDeC.anteriorDE}">
+                        <p:ajax listener="#{listaDECircularCrontroller.irUltimo()}" update="panelPerrosDEC"/> 
+                    </p:commandButton>
+
+
+
+
+
+
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+
+        <h:form id="acciones">
+
+            <p:selectOneMenu   required="true" value="#{listaDECircularCrontroller.sentencia}" >
+
+                <f:selectItem itemLabel="Seleccione uno" itemEscaped="true"  />
+                <f:selectItem itemValue="par" itemLabel="Edades Pares" />
+                <f:selectItem itemValue="impar" itemLabel="Edades Impares"/>
+
+            </p:selectOneMenu>
+            
+            <p:commandButton value="Sumar" update="acciones,FormularioDEC" action="#{listaDECircularCrontroller.sumarEdades()}" />
+
+
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

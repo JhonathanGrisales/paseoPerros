@@ -17,10 +17,10 @@
                 <p:growl id="errores"/>
                 <p:panelGrid columns="2">
 
-                    <h:outputText value="Número"/>
-                    <p:spinner value="#{listaSEController.perroEncontrado.numero}" min="1" required="true"/>
+                    <h:outputText value="Número" id="numero"/>
+                    <h:outputText value="#{listaSEController.aleatorio}" />
                     <h:outputText value="Nombre"/>
-                    <p:inputText id="Nombre" value="#{listaSEController.perroEncontrado.nombre}" required="true" />
+                    <p:inputText id="Nombre" value="#{listaSEController.perroEncontrado.numero}" required="true" />
                     <h:outputText value="Edad"/>
                     <p:spinner value="#{listaSEController.perroEncontrado.edad}" required="true" min="1 "/>
                   

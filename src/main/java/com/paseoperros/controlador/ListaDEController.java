@@ -52,6 +52,8 @@ public class ListaDEController implements Serializable {
     private DefaultDiagramModel model;
 
     private int seleccionUbicacionDE = 0;
+    
+    private byte aleatorio = (byte) ((int) (Math.random() * (100 - 2) + 2));
 
     /**
      * Creates a new instance of ListaDEController
@@ -64,10 +66,10 @@ public class ListaDEController implements Serializable {
 
         listaPerrosDE = new ListaDE();
 
-        listaPerrosDE.adicionarNodo(new Perro("Pastor", (byte) 1, (byte) 5, "M"));
-        listaPerrosDE.adicionarNodo(new Perro("Firulais", (byte) 2, (byte) 4, "M"));
-        listaPerrosDE.adicionarNodo(new Perro("Kuki", (byte) 3, (byte) 7, "F"));
-        listaPerrosDE.adicionarNodo(new Perro("Princesa", (byte) 4, (byte) 9, "F"));
+        listaPerrosDE.adicionarNodo(new Perro("Pastor", (byte) ((int) (Math.random() * (100 - 2) + 2)), (byte) 5, "M"));
+        listaPerrosDE.adicionarNodo(new Perro("Firulais", (byte) ((int) (Math.random() * (100 - 2) + 2)), (byte) 4, "M"));
+        listaPerrosDE.adicionarNodo(new Perro("Kuki", (byte) ((int) (Math.random() * (100 - 2) + 2)), (byte) 7, "F"));
+        listaPerrosDE.adicionarNodo(new Perro("Princesa", (byte) ((int) (Math.random() * (100 - 2) + 2)), (byte) 9, "F"));
 
         perroMostrarDE = listaPerrosDE.getCabezaDe().getDato();
 
@@ -174,8 +176,18 @@ public class ListaDEController implements Serializable {
         seleccionUbicacionDE = 0;
         return "crearDE";
     }
+    
+    
+    public byte crearAleatorio() {
+
+        aleatorio = ((byte) ((int) (Math.random() * (100 - 2) + 2)));
+        return aleatorio;
+
+    }
 
     public void guardarPerroDE() {
+        
+         perroEncontradoDE.setNumero(aleatorio);
 
         switch (seleccionUbicacionDE) {
 
@@ -183,21 +195,25 @@ public class ListaDEController implements Serializable {
                 listaPerrosDE.adicionarAlInicio(perroEncontradoDE);
                 posicion = 1;
                 seleccionUbicacionDE = 0;
+                aleatorio = crearAleatorio();
                 break;
             case 2:
                 listaPerrosDE.adicionarNodo(perroEncontradoDE);
                 posicion = 1;
                 seleccionUbicacionDE = 0;
+                aleatorio = crearAleatorio();
                 break;
             case 3:
                 listaPerrosDE.adicionarNodoEnSPosicion(perroEncontradoDE, posicion);
                 posicion = 1;
                 seleccionUbicacionDE = 0;
+                aleatorio = crearAleatorio();
                 break;
             default:
                 listaPerrosDE.adicionarNodo(perroEncontradoDE);
                 posicion = 1;
                 seleccionUbicacionDE = 0;
+                aleatorio = crearAleatorio();
 
         }
 
