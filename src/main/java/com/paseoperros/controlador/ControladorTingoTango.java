@@ -7,24 +7,28 @@ package com.paseoperros.controlador;
 
 import co.edu.umanizales.listase.modelo.Infante;
 import co.edu.umanizales.listase.modelo.ListaDECInfante;
-import co.edu.umanizales.listase.modelo.ListaDECircular;
-import co.edu.umanizales.listase.modelo.NodoDE;
 import co.edu.umanizales.listase.modelo.NodoDEInfante;
-import co.edu.umanizales.listase.modelo.Perro;
+import co.edu.umanizales.listase.modelo.OportunidadNiño;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.Random;
 import javax.annotation.PostConstruct;
-import static org.primefaces.component.barchart.BarChartBase.PropertyKeys.model;
 import org.primefaces.model.DashboardColumn;
 import org.primefaces.model.DashboardModel;
 import org.primefaces.model.DefaultDashboardColumn;
 import org.primefaces.model.DefaultDashboardModel;
+import org.primefaces.model.diagram.Connection;
+import org.primefaces.model.diagram.DefaultDiagramModel;
+import org.primefaces.model.diagram.Element;
+import org.primefaces.model.diagram.connector.FlowChartConnector;
+import org.primefaces.model.diagram.endpoint.BlankEndPoint;
+import org.primefaces.model.diagram.endpoint.EndPoint;
+import org.primefaces.model.diagram.endpoint.EndPointAnchor;
+import org.primefaces.model.diagram.overlay.ArrowOverlay;
+import org.primefaces.model.diagram.overlay.LabelOverlay;
 
 /**
  *
@@ -36,15 +40,36 @@ public class ControladorTingoTango implements Serializable {
 
     private Infante infanteGuardar;
     private List<Infante> listadoInfantes;
+    private List<Infante> listadoInfantesEliminados;
+
+    private List<OportunidadNiño> listaOportunidades;
+    private OportunidadNiño niñoSeleccionado;
+
     private ListaDECircularCrontroller tingoTango;
-    private boolean estadoJuego;
+
     private byte cantidadInfantes;
     private byte numOportunidades;
     private byte posIgreso;
-    private NodoDEInfante ayudante;
+    private NodoDEInfante ayudanteColor;
+    private NodoDEInfante tempDEC;
     private ListaDECInfante listaNiñosDEC;
     private DashboardModel model;
     private String sexo;
+    private DefaultDiagramModel modeloGrafica;
+
+    private byte idAleatorio;
+
+    private String textoBotonIniciarDer;
+    private String textoBotonIzqui;
+    private boolean estadoJuego;
+    private boolean estadoJuegoIzqu;
+    private String colorBotonDer;
+    private String colorBotonIzqu;
+
+    private OportunidadNiño infanteReingresar;
+    private int seleccionGeneroIngresar = 0;
+    private int seleccionUbicacion = 0;
+    private int posicion;
 
     /**
      * Creates a new instance of ControladorTingoTango
@@ -59,26 +84,105 @@ public class ControladorTingoTango implements Serializable {
         model = new DefaultDashboardModel();
         DashboardColumn column1 = new DefaultDashboardColumn();
         DashboardColumn column2 = new DefaultDashboardColumn();
+        DashboardColumn column3 = new DefaultDashboardColumn();
 
         column1.addWidget("acciones");
         column2.addWidget("lista");
 
+        column1.addWidget("Grafica");
+
         model.addColumn(column1);
         model.addColumn(column2);
+        model.addColumn(column3);
 
         listaNiñosDEC = new ListaDECInfante();
 
-//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(new Infante("Jero", true, (byte) 12));
-//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(new Infante("Mateo", true, (byte) 10));
-//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(new Infante("Mateo", true, (byte) 10));
-//        infanteGuaradar = listaNiñosDEC.getCabezaInfante().getDato();
-        ayudante = listaNiñosDEC.getCabezaInfante();
-
+//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(new Infante("Jero", (byte) 1, "Mascu"));
+//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(new Infante("Karen", (byte) 2, "Mascu"));
+//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(new Infante("Andres", (byte) 3, "Mascu"));
+//        infanteGuardar = listaNiñosDEC.getCabezaInfante().getDato();
+//        ayudanteColor = listaNiñosDEC.getCabezaInfante();
         listadoInfantes = new ArrayList<>();
+        listadoInfantesEliminados = new ArrayList<>();
+        listaOportunidades = new ArrayList<>();
+        idAleatorio = 1;
 
+        textoBotonIniciarDer = "INICIAR DERECHA";
+        textoBotonIzqui = "INICIAR IZQUIERDA";
+        estadoJuego = false;
+        estadoJuegoIzqu = false;
+        colorBotonDer = "#088A29";
+        colorBotonIzqu = "#088A29";
+
+//        modeloDerecha();
+//        modeloIzuierda();
     }
 
     //GET Y SET
+    public int getSeleccionGeneroIngresar() {
+        return seleccionGeneroIngresar;
+    }
+
+    public void setSeleccionGeneroIngresar(int seleccionGeneroIngresar) {
+        this.seleccionGeneroIngresar = seleccionGeneroIngresar;
+    }
+
+    public byte getIdAleatorio() {
+        return idAleatorio;
+    }
+
+    public void setIdAleatorio(byte idAleatorio) {
+        this.idAleatorio = idAleatorio;
+    }
+
+    public OportunidadNiño getInfanteReingresar() {
+        return infanteReingresar;
+    }
+
+    public void setInfanteReingresar(OportunidadNiño infanteReingresar) {
+        this.infanteReingresar = infanteReingresar;
+    }
+
+    public List<Infante> getListadoInfantesEliminados() {
+        return listadoInfantesEliminados;
+    }
+
+    public void setListadoInfantesEliminados(List<Infante> listadoInfantesEliminados) {
+        this.listadoInfantesEliminados = listadoInfantesEliminados;
+    }
+
+    public boolean isEstadoJuegoIzqu() {
+        return estadoJuegoIzqu;
+    }
+
+    public void setEstadoJuegoIzqu(boolean estadoJuegoIzqu) {
+        this.estadoJuegoIzqu = estadoJuegoIzqu;
+    }
+
+    public NodoDEInfante getAyudanteColor() {
+        return ayudanteColor;
+    }
+
+    public void setAyudanteColor(NodoDEInfante ayudanteColor) {
+        this.ayudanteColor = ayudanteColor;
+    }
+
+    public String getColorBotonIzqu() {
+        return colorBotonIzqu;
+    }
+
+    public void setColorBotonIzqu(String colorBotonIzqu) {
+        this.colorBotonIzqu = colorBotonIzqu;
+    }
+
+    public String getTextoBotonIzqui() {
+        return textoBotonIzqui;
+    }
+
+    public void setTextoBotonIzqui(String textoBotonIzqui) {
+        this.textoBotonIzqui = textoBotonIzqui;
+    }
+
     public void setModel(DashboardModel model) {
         this.model = model;
 
@@ -144,14 +248,6 @@ public class ControladorTingoTango implements Serializable {
         this.posIgreso = posIgreso;
     }
 
-    public NodoDEInfante getAyudante() {
-        return ayudante;
-    }
-
-    public void setAyudante(NodoDEInfante ayudante) {
-        this.ayudante = ayudante;
-    }
-
     public ListaDECInfante getListaNiñosDEC() {
         return listaNiñosDEC;
     }
@@ -168,7 +264,258 @@ public class ControladorTingoTango implements Serializable {
         this.sexo = sexo;
     }
 
+    public NodoDEInfante getTempDEC() {
+        return tempDEC;
+    }
+
+    public void setTempDEC(NodoDEInfante tempDEC) {
+        this.tempDEC = tempDEC;
+    }
+
+    public DefaultDiagramModel getModeloGrafica() {
+        return modeloGrafica;
+    }
+
+    public void setModeloGrafica(DefaultDiagramModel modeloGrafica) {
+        this.modeloGrafica = modeloGrafica;
+    }
+
+    public String getTextoBotonIniciarDer() {
+        return textoBotonIniciarDer;
+    }
+
+    public void setTextoBotonIniciarDer(String textoBotonIniciarDer) {
+        this.textoBotonIniciarDer = textoBotonIniciarDer;
+    }
+
+    public String getColorBotonDer() {
+        return colorBotonDer;
+    }
+
+    public void setColorBotonDer(String colorBotonDer) {
+        this.colorBotonDer = colorBotonDer;
+    }
+
+    public List<OportunidadNiño> getOportunidades() {
+        return listaOportunidades;
+    }
+
+    public void setOportunidades(List<OportunidadNiño> oportunidades) {
+        this.listaOportunidades = oportunidades;
+    }
+
+    public OportunidadNiño getNiñoSeleccionado() {
+        return niñoSeleccionado;
+    }
+
+    public void setNiñoSeleccionado(OportunidadNiño niñoSeleccionado) {
+        this.niñoSeleccionado = niñoSeleccionado;
+    }
+
+    public List<OportunidadNiño> getListaOportunidades() {
+        return listaOportunidades;
+    }
+
+    public void setListaOportunidades(List<OportunidadNiño> listaOportunidades) {
+        this.listaOportunidades = listaOportunidades;
+    }
+
+    public int getSeleccionUbicacion() {
+        return seleccionUbicacion;
+    }
+
+    public void setSeleccionUbicacion(int seleccionUbicacion) {
+        this.seleccionUbicacion = seleccionUbicacion;
+    }
+
+    public int getPosicion() {
+        return posicion;
+    }
+
+    public void setPosicion(int posicion) {
+        this.posicion = posicion;
+    }
+
     //GET Y SET
+    public void seleccionarInfante(OportunidadNiño infa) {
+
+        infanteReingresar = infa;
+
+    }
+
+    public void capturarInfanteEditar(Infante infante) {
+
+        listadoInfantes.remove(infante);
+        infanteGuardar = infante;
+
+    }
+
+    public void actualizarInfante() {
+
+        listadoInfantes.add(infanteGuardar);
+        infanteGuardar = new Infante();
+
+    }
+
+    public void eliminarInfante(Infante infante) {
+
+        listadoInfantes.remove(infante);
+
+    }
+
+    public void reingresarPorGenero() {
+
+        switch (seleccionGeneroIngresar) {
+
+            case 1:
+
+                reingresarNiñas(niñoSeleccionado);
+
+                break;
+
+            case 2:
+
+                reingresarNiños(niñoSeleccionado);
+
+                break;
+
+        }
+
+    }
+
+    public void controlarJuegoDerecha() {
+
+        if (estadoJuegoIzqu == false) {
+
+            textoBotonIniciarDer = "INICIAR DERECHA";
+            colorBotonDer = "#088A29";
+            estadoJuego = !estadoJuego;
+
+            if (estadoJuego == false) {
+
+                if (ayudanteColor.getDatoDos().getOportunidad() >= 1) {
+
+                    ayudanteColor.getDatoDos().setOportunidad((byte) (ayudanteColor.getDatoDos().getOportunidad() - 1));
+                    JsfUtil.addSuccessMessage(ayudanteColor.getDatoDos().getInfante().getNombre() + " Pierde una oportunidad "
+                            + " le quedan " + ayudanteColor.getDatoDos().getOportunidad() + " oportunidades");
+
+                } else {
+
+                    listaOportunidades.add(ayudanteColor.getDatoDos());
+
+//                    listadoInfantes.add(ayudanteColor.getDato());
+                    JsfUtil.addSuccessMessage("Se elimino " + ayudanteColor.getDatoDos().getInfante().getNombre());
+                    NodoDEInfante tempral = ayudanteColor.getSiguienteDE();
+                    listaNiñosDEC.eliminarNodoDirecto(ayudanteColor.getDatoDos());
+                    ayudanteColor = tempral;
+
+                    modeloDerecha();
+
+                    if (listaNiñosDEC.contarNodosDEC() == 1) {
+
+                        JsfUtil.addSuccessMessage("Niño Ganador " + ayudanteColor.getDatoDos().getInfante().getNombre());
+
+                    }
+
+                }
+
+            }
+
+            if (estadoJuego) {
+
+                textoBotonIniciarDer = "PARAR DERECHA";
+                colorBotonDer = "#B40404";
+
+            }
+        } else {
+
+            JsfUtil.addErrorMessage("EL JUEGO ESTA CORRIENDO HACIA LA IZQUIERDA ");
+        }
+
+    }
+
+    public void controlarJuegoIzqui() {
+
+        if (estadoJuego == false) {
+
+            textoBotonIzqui = "INICIAR IZQUIERDA";
+            colorBotonIzqu = "#088A29";
+            estadoJuegoIzqu = !estadoJuegoIzqu;
+
+            if (estadoJuegoIzqu == false) {
+
+                if (ayudanteColor.getDatoDos().getOportunidad() >= 1) {
+
+                    ayudanteColor.getDatoDos().setOportunidad((byte) (ayudanteColor.getDatoDos().getOportunidad() - 1));
+                    JsfUtil.addSuccessMessage(ayudanteColor.getDatoDos().getInfante().getNombre().toUpperCase() + " Pierde una oportunidad "
+                            + " le quedan " + ayudanteColor.getDatoDos().getOportunidad() + " oportunidades");
+
+                } else {
+
+                    listaOportunidades.add(ayudanteColor.getDatoDos());
+
+//                    listadoInfantes.add(ayudanteColor.getDato());
+                    JsfUtil.addSuccessMessage("Se elimino " + ayudanteColor.getDatoDos().getInfante().getNombre());
+                    NodoDEInfante tempral = ayudanteColor.getAnteriorDE();
+                    listaNiñosDEC.eliminarNodoDirecto(ayudanteColor.getDatoDos());
+                    ayudanteColor = tempral;
+
+                    modeloIzuierda();
+
+                    if (listaNiñosDEC.contarNodosDEC() == 1) {
+
+                        JsfUtil.addSuccessMessage("Niño Ganador " + ayudanteColor.getDatoDos().getInfante().getNombre());
+
+                    }
+
+                }
+
+            }
+
+            if (estadoJuegoIzqu) {
+
+                textoBotonIzqui = "PARAR IZQUIERDA";
+                colorBotonIzqu = "#B40404";
+
+            }
+
+        } else {
+
+            JsfUtil.addErrorMessage("EL JUEGO ESTA CORRIENDO HACIA LA DERECHA ");
+        }
+
+    }
+
+    public void pasarSiguienteDerColor() {
+
+        if (ayudanteColor.getSiguienteDE() != null) {
+
+            ayudanteColor = ayudanteColor.getSiguienteDE();
+
+        } else {
+
+            /// empieza de nuevo
+        }
+
+        modeloDerecha();
+
+    }
+
+    public void pasarAnteriorDerColor() {
+
+        if (ayudanteColor.getAnteriorDE() != null) {
+
+            ayudanteColor = ayudanteColor.getAnteriorDE();
+
+        } else {
+
+            /// empieza de nuevo
+        }
+
+        modeloIzuierda();
+
+    }
+
     public String irCrearNiño() {
 
         infanteGuardar = new Infante();
@@ -181,6 +528,193 @@ public class ControladorTingoTango implements Serializable {
         return "tingotango";
     }
 
+    public void retirarNiñas() {
+
+        int contador = listaNiñosDEC.contarNiños("niña");
+
+        if (contador != listaNiñosDEC.contarNodosDEC()) {
+
+            guardarNiñas();
+            listaNiñosDEC.eliminarNiños("niña");
+            modeloDerecha();
+
+        } else {
+
+            JsfUtil.addErrorMessage("Solo hay niñas , el juego no puede quedar vacio");
+
+        }
+
+    }
+
+    public void guardarNiñas() {
+
+        int cont = 0;
+
+        for (OportunidadNiño eliminarNiño : listaNiñosDEC.eliminarNiños("niña")) {
+
+            if (eliminarNiño.getInfante() instanceof Infante) {
+
+                listaOportunidades.add(eliminarNiño);
+                cont++;
+
+            }
+
+        }
+
+        if (cont == 0) {
+
+            JsfUtil.addErrorMessage("No hay Niñas para retirar del juego");
+
+        }
+
+    }
+
+    public void guardarNiños() {
+
+        int cont = 0;
+
+        for (OportunidadNiño eliminarNiño : listaNiñosDEC.eliminarNiños("niño")) {
+
+            if (eliminarNiño.getInfante() instanceof Infante) {
+
+                listaOportunidades.add(eliminarNiño);
+                cont++;
+
+            }
+
+        }
+
+        if (cont == 0) {
+
+            JsfUtil.addErrorMessage("No hay Niños para retirar del juego");
+
+        }
+
+    }
+
+    public void retirarNiños() {
+
+        int contador = listaNiñosDEC.contarNiños("niño");
+
+        if (contador != listaNiñosDEC.contarNodosDEC()) {
+
+            guardarNiños();
+            listaNiñosDEC.eliminarNiños("niño");
+            modeloDerecha();
+
+        } else {
+
+            JsfUtil.addErrorMessage("Solo hay niños , el juego no puede quedar vacio");
+
+        }
+
+    }
+
+    public void reingresarIndividual() {
+
+        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(infanteReingresar);
+        listaOportunidades.remove(infanteReingresar);
+        modeloDerecha();
+        infanteReingresar = new OportunidadNiño();
+
+    }
+
+    public void reingresarInfante(OportunidadNiño infanteEliminado) {
+
+        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(infanteEliminado);
+        modeloDerecha();
+        listaOportunidades.remove(infanteEliminado);
+
+    }
+
+    public void reingresarNiñas(OportunidadNiño infanteEliminado) {
+
+        int cont = 0;
+        List<OportunidadNiño> listaTemporal = new ArrayList<>();
+
+        for (OportunidadNiño Eliminado : listaOportunidades) {
+
+            if (Eliminado.getInfante().getGenero().equals("Femenino")) {
+
+                listaNiñosDEC.adicionarNiñoAlinicioDeCircular(Eliminado);
+                listaTemporal.add(Eliminado);
+                cont++;
+
+            }
+
+        }
+
+        listaOportunidades.removeAll(listaTemporal);
+        modeloDerecha();
+
+        if (cont == 0) {
+
+            JsfUtil.addErrorMessage("No hay Niñas para Reingresar");
+
+        }
+
+    }
+
+    public void reingresarNiño() {
+
+        switch (seleccionUbicacion) {
+
+            case 1:
+                listaNiñosDEC.adicionarNiñoAlinicioDeCircular(infanteReingresar);
+                seleccionUbicacion = 0;
+
+                break;
+            case 2:
+                listaNiñosDEC.adicionarNodoAlfinal(infanteReingresar);
+                seleccionUbicacion = 0;
+                ;
+                break;
+            case 3:
+                listaNiñosDEC.adicionarNodoEnSPosicion(infanteReingresar, posicion);
+                seleccionUbicacion = 0;
+
+                break;
+            default:
+                listaNiñosDEC.adicionarNodoAlfinal(infanteReingresar);
+                seleccionUbicacion = 0;
+
+        }
+
+        listaOportunidades.remove(infanteReingresar);
+        modeloDerecha();
+        infanteReingresar = new OportunidadNiño();
+
+        JsfUtil.addSuccessMessage("Se ha reingreso el niño a la lista");
+
+    }
+
+    public void reingresarNiños(OportunidadNiño infanteEliminado) {
+
+        int cont = 0;
+        List<OportunidadNiño> listaTemporal = new ArrayList<>();
+
+        for (OportunidadNiño Eliminado : listaOportunidades) {
+
+            if (Eliminado.getInfante().getGenero().equals("Masculino")) {
+
+                listaNiñosDEC.adicionarNiñoAlinicioDeCircular(Eliminado);
+                listaTemporal.add(Eliminado);
+                cont++;
+
+            }
+
+        }
+
+        listaOportunidades.removeAll(listaTemporal);
+        modeloDerecha();
+
+        if (cont == 0) {
+
+            JsfUtil.addErrorMessage("No hay Niños para Reingresar");
+
+        }
+    }
+
     public int contarInfantes() {
 
         int tamanio = listadoInfantes.size();
@@ -189,7 +723,47 @@ public class ControladorTingoTango implements Serializable {
 
     }
 
+    public int contarInfantesEliminados() {
+
+        int tamanio = listaOportunidades.size();
+
+        return tamanio;
+
+    }
+
+    public void reiniciar() {
+
+        listaNiñosDEC.setCabezaInfante(null);
+        modeloDerecha();
+    }
+
+    public void eliminarDirecta() {
+
+        listaOportunidades.add(ayudanteColor.getDatoDos());
+        listaNiñosDEC.eliminarNodoDirecto(ayudanteColor.getDatoDos());
+        ayudanteColor = listaNiñosDEC.getCabezaInfante();
+        modeloDerecha();
+
+    }
+
+    public void eliminarGenero(OportunidadNiño niño) {
+
+        listaOportunidades.add(niño);
+        listaNiñosDEC.eliminarNodoDirecto(niño);
+        ayudanteColor = listaNiñosDEC.getCabezaInfante();
+        modeloDerecha();
+
+    }
+
+    public void contarListaInfantes() {
+
+        listaNiñosDEC.contarNodosDEC();
+
+    }
+
     public void adicionarArray() {
+
+        infanteGuardar.setIdentificador(idAleatorio++);
 
         listadoInfantes.add(infanteGuardar);
         infanteGuardar = new Infante();
@@ -198,35 +772,197 @@ public class ControladorTingoTango implements Serializable {
 
     public void configurarJuego() {
 
+        List<Infante> listaTemporal = new ArrayList<>();
+
         if (cantidadInfantes > contarInfantes()) {
 
-            System.out.println("Mensaje");
             JsfUtil.addErrorMessage("No tiene los suficientes niños para jugar ");
 
         } else {
 
             int cont = 0;
+            int maximo = listadoInfantes.size();
 
-            while (cont != cantidadInfantes) {
+            for (int i = 0; i < maximo; i++) {
 
-                for (Infante infa : listadoInfantes) {
+                Random r = new Random();
+                int inicio = 0;
+                int fin = listadoInfantes.size();
+                int result = r.nextInt(fin - inicio) + inicio;
 
-                    if (infa instanceof Infante) {
-
-                        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(infa);
-////                        listadoInfantes.remove(infa);
-                        cont++;
-
-                    }
-
+                if (cantidadInfantes == cont) {
+                    break;
                 }
 
+                System.out.println("SI ENTRA AGREGAR");
+
+                niñoSeleccionado = new OportunidadNiño(listadoInfantes.get(result), (byte) numOportunidades);
+
+                listaNiñosDEC.adicionarNiñoAlinicioDeCircular(niñoSeleccionado);
+                listaTemporal.add(niñoSeleccionado.getInfante());
+                listadoInfantes.remove(niñoSeleccionado.getInfante());
+                cont++;
+
             }
+
+            listadoInfantes.addAll(listaTemporal);
 
         }
 
         listaNiñosDEC.mostrarListaDEC();
+        ayudanteColor = listaNiñosDEC.getCabezaInfante();
+        modeloDerecha();
 
+    }
+
+    private Connection createConnection(EndPoint from, EndPoint to, String label) {
+        Connection conn = new Connection(from, to);
+        conn.getOverlays().add(new ArrowOverlay(20, 20, 1, 1));
+
+        if (label != null) {
+            conn.getOverlays().add(new LabelOverlay(label, "flow-label", 0.5));
+        }
+
+        return conn;
+    }
+
+    public void modeloDerecha() {
+
+//Instanciar el modelo
+        modeloGrafica = new DefaultDiagramModel();
+        //Definir el modelo la cantidad de enlaces -1 (Infinito)
+        modeloGrafica.setMaxConnections(-1);
+        //Pregunto si hay datos
+
+        if (listaNiñosDEC.getCabezaInfante() != null) {
+
+            //Llamar ayudante y ubicar en el primero 
+            NodoDEInfante ayudanteDos = listaNiñosDEC.getCabezaInfante();
+            //Recorro mientras el ayudante tenga ddato 
+            int posX = 2;
+            int posY = 2;
+
+            while (ayudanteDos.getSiguienteDE() != listaNiñosDEC.getCabezaInfante()) {
+
+                Element niñoPintar = new Element(ayudanteDos.getDatoDos().getInfante().getNombre(), posX + "em", posY + "em");
+
+                if (ayudanteDos.getDatoDos().getInfante().getIdentificador()
+                        == ayudanteColor.getDatoDos().getInfante().getIdentificador()) {
+
+                    niñoPintar.setStyleClass("ui-diagram-success");
+
+                }
+
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_LEFT));
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_RIGHT));
+
+                modeloGrafica.addElement(niñoPintar);
+
+                ayudanteDos = ayudanteDos.getSiguienteDE();
+                posX = posX + 5;
+                posY = posY + 5;
+            }
+
+            Element niñoPintar = new Element(ayudanteDos.getDatoDos().getInfante().getNombre(), posX + "em", posY + "em");
+
+            if (ayudanteDos.getDatoDos().getInfante().getIdentificador()
+                    == ayudanteColor.getDatoDos().getInfante().getIdentificador()) {
+
+                niñoPintar.setStyleClass("ui-diagram-success");
+
+            }
+
+            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
+            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
+            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_LEFT));
+            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_RIGHT));
+
+            modeloGrafica.addElement(niñoPintar);
+
+            //YA SE PINTARON TODOS LOS ELEMENTOS 
+            //PROPIEDAD PARA EL CONECTOR
+            FlowChartConnector connector = new FlowChartConnector();
+            connector.setPaintStyle("{strokeStyle:'#092CB0',lineWidth:3}");
+            modeloGrafica.setDefaultConnector(connector);
+
+            for (int i = 0; i < modeloGrafica.getElements().size() - 1; i++) {
+
+                modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(i).getEndPoints().get(0), modeloGrafica.getElements().get(i + 1).getEndPoints().get(1), null));
+                modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(i + 1).getEndPoints().get(2), modeloGrafica.getElements().get(i).getEndPoints().get(3), null));
+//                modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(1).getEndPoints().get(2), modeloGrafica.getElements().get(3).getEndPoints().get(3), null));
+            }
+        }
+    }
+
+    public void modeloIzuierda() {
+
+//Instanciar el modelo
+        modeloGrafica = new DefaultDiagramModel();
+        //Definir el modelo la cantidad de enlaces -1 (Infinito)
+        modeloGrafica.setMaxConnections(-1);
+        //Pregunto si hay datos
+
+        if (listaNiñosDEC.getCabezaInfante() != null) {
+
+            //Llamar ayudante y ubicar en el primero 
+            NodoDEInfante ayudanteDos = listaNiñosDEC.getCabezaInfante();
+            //Recorro mientras el ayudante tenga ddato 
+            int posX = 2;
+            int posY = 2;
+
+            while (ayudanteDos.getSiguienteDE() != listaNiñosDEC.getCabezaInfante()) {
+
+                Element niñoPintar = new Element(ayudanteDos.getDatoDos().getInfante().getNombre(), posX + "em", posY + "em");
+
+                if (ayudanteDos.getDatoDos().getInfante().getIdentificador()
+                        == ayudanteColor.getDatoDos().getInfante().getIdentificador()) {
+
+                    niñoPintar.setStyleClass("ui-diagram-success");
+
+                }
+
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_LEFT));
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_RIGHT));
+
+                modeloGrafica.addElement(niñoPintar);
+
+                ayudanteDos = ayudanteDos.getSiguienteDE();
+                posX = posX + 5;
+                posY = posY + 5;
+            }
+
+            Element niñoPintar = new Element(ayudanteDos.getDatoDos().getInfante().getNombre(), posX + "em", posY + "em");
+
+            if (ayudanteDos.getDatoDos().getInfante().getIdentificador()
+                    == ayudanteColor.getDatoDos().getInfante().getIdentificador()) {
+
+                niñoPintar.setStyleClass("ui-diagram-success");
+
+            }
+
+            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
+            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
+            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_LEFT));
+            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_RIGHT));
+
+            modeloGrafica.addElement(niñoPintar);
+
+            //YA SE PINTARON TODOS LOS ELEMENTOS 
+            //PROPIEDAD PARA EL CONECTOR
+            FlowChartConnector connector = new FlowChartConnector();
+            connector.setPaintStyle("{strokeStyle:'#092CB0',lineWidth:3}");
+            modeloGrafica.setDefaultConnector(connector);
+
+            for (int i = 0; i < modeloGrafica.getElements().size() - 1; i++) {
+
+                modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(i).getEndPoints().get(0), modeloGrafica.getElements().get(i + 1).getEndPoints().get(1), null));
+                modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(i + 1).getEndPoints().get(2), modeloGrafica.getElements().get(i).getEndPoints().get(3), null));
+            }
+        }
     }
 
 }

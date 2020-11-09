@@ -37,5 +37,9 @@
             <from-outcome>crearniño</from-outcome>
             <to-view-id>/ingresar_niño.xhtml</to-view-id>
         </navigation-case>
+        <navigation-case>
+            <from-outcome>tingotango</from-outcome>
+            <to-view-id>/tingotango.xhtml</to-view-id>
+        </navigation-case>
     </navigation-rule>
 </faces-config>
