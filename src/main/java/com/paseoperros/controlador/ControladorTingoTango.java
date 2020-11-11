@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.PostConstruct;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.DashboardColumn;
 import org.primefaces.model.DashboardModel;
 import org.primefaces.model.DefaultDashboardColumn;
@@ -70,6 +71,8 @@ public class ControladorTingoTango implements Serializable {
     private int seleccionGeneroIngresar = 0;
     private int seleccionUbicacion = 0;
     private int posicion;
+    private byte numOporIngreso;
+    private byte oporGenero;
 
     /**
      * Creates a new instance of ControladorTingoTango
@@ -97,9 +100,21 @@ public class ControladorTingoTango implements Serializable {
 
         listaNiñosDEC = new ListaDECInfante();
 
-//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(new Infante("Jero", (byte) 1, "Mascu"));
-//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(new Infante("Karen", (byte) 2, "Mascu"));
-//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(new Infante("Andres", (byte) 3, "Mascu"));
+//        Infante lulu = new Infante("Lulu", (byte) 1, "Femenino");
+//        OportunidadNiño niño1 = new OportunidadNiño(lulu, (byte) 1);
+//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(niño1);
+//
+//        Infante pastor = new Infante("Pastor", (byte) 2, "Masculino");
+//        OportunidadNiño niño2 = new OportunidadNiño(pastor, (byte) 1);
+//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(niño2);
+//
+//        Infante tomy = new Infante("Tomy", (byte) 4, "Masculino");
+//        OportunidadNiño niño4 = new OportunidadNiño(tomy, (byte) 1);
+//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(niño4);
+//
+//        Infante kira = new Infante("Kira", (byte) 5, "Masculino");
+//        OportunidadNiño niño5 = new OportunidadNiño(kira, (byte) 1);
+//        listaNiñosDEC.adicionarNiñoAlinicioDeCircular(niño5);
 //        infanteGuardar = listaNiñosDEC.getCabezaInfante().getDato();
 //        ayudanteColor = listaNiñosDEC.getCabezaInfante();
         listadoInfantes = new ArrayList<>();
@@ -119,6 +134,22 @@ public class ControladorTingoTango implements Serializable {
     }
 
     //GET Y SET
+    public byte getOporGenero() {
+        return oporGenero;
+    }
+
+    public void setOporGenero(byte oporGenero) {
+        this.oporGenero = oporGenero;
+    }
+
+    public byte getNumOporIngreso() {
+        return numOporIngreso;
+    }
+
+    public void setNumOporIngreso(byte numOporIngreso) {
+        this.numOporIngreso = numOporIngreso;
+    }
+
     public int getSeleccionGeneroIngresar() {
         return seleccionGeneroIngresar;
     }
@@ -396,7 +427,7 @@ public class ControladorTingoTango implements Serializable {
                 if (ayudanteColor.getDatoDos().getOportunidad() >= 1) {
 
                     ayudanteColor.getDatoDos().setOportunidad((byte) (ayudanteColor.getDatoDos().getOportunidad() - 1));
-                    JsfUtil.addSuccessMessage(ayudanteColor.getDatoDos().getInfante().getNombre() + " Pierde una oportunidad "
+                    JsfUtil.addSuccessMessage(ayudanteColor.getDatoDos().getInfante().getNombre().toUpperCase() + " Pierde una oportunidad "
                             + " le quedan " + ayudanteColor.getDatoDos().getOportunidad() + " oportunidades");
 
                 } else {
@@ -412,6 +443,10 @@ public class ControladorTingoTango implements Serializable {
                     modeloDerecha();
 
                     if (listaNiñosDEC.contarNodosDEC() == 1) {
+
+                        PrimeFaces current = PrimeFaces.current();
+                        current.executeScript("PF('myDialogVar').show();");
+                        reiniciar();
 
                         JsfUtil.addSuccessMessage("Niño Ganador " + ayudanteColor.getDatoDos().getInfante().getNombre());
 
@@ -463,6 +498,10 @@ public class ControladorTingoTango implements Serializable {
                     modeloIzuierda();
 
                     if (listaNiñosDEC.contarNodosDEC() == 1) {
+
+                        PrimeFaces current = PrimeFaces.current();
+                        current.executeScript("PF('myDialogVar').show();");
+                        reiniciar();
 
                         JsfUtil.addSuccessMessage("Niño Ganador " + ayudanteColor.getDatoDos().getInfante().getNombre());
 
@@ -636,6 +675,8 @@ public class ControladorTingoTango implements Serializable {
 
             if (Eliminado.getInfante().getGenero().equals("Femenino")) {
 
+                Eliminado.setOportunidad(oporGenero);
+
                 listaNiñosDEC.adicionarNiñoAlinicioDeCircular(Eliminado);
                 listaTemporal.add(Eliminado);
                 cont++;
@@ -655,7 +696,24 @@ public class ControladorTingoTango implements Serializable {
 
     }
 
+    public void reingresarEnPosDada() {
+
+        infanteReingresar.setOportunidad(numOporIngreso);
+
+        listaNiñosDEC.adicionarNodoPorPosicion(infanteReingresar, posicion);
+        modeloIzuierda();
+        listaOportunidades.remove(infanteReingresar);
+        infanteReingresar = new OportunidadNiño();
+
+        JsfUtil.addSuccessMessage("Se ha reingreso el niño a la lista");
+
+        listaNiñosDEC.mostrarListaDEC();
+
+    }
+
     public void reingresarNiño() {
+
+        infanteReingresar.setOportunidad(numOporIngreso);
 
         switch (seleccionUbicacion) {
 
@@ -669,11 +727,7 @@ public class ControladorTingoTango implements Serializable {
                 seleccionUbicacion = 0;
                 ;
                 break;
-            case 3:
-                listaNiñosDEC.adicionarNodoEnSPosicion(infanteReingresar, posicion);
-                seleccionUbicacion = 0;
 
-                break;
             default:
                 listaNiñosDEC.adicionarNodoAlfinal(infanteReingresar);
                 seleccionUbicacion = 0;
@@ -696,6 +750,8 @@ public class ControladorTingoTango implements Serializable {
         for (OportunidadNiño Eliminado : listaOportunidades) {
 
             if (Eliminado.getInfante().getGenero().equals("Masculino")) {
+
+                Eliminado.setOportunidad(oporGenero);
 
                 listaNiñosDEC.adicionarNiñoAlinicioDeCircular(Eliminado);
                 listaTemporal.add(Eliminado);
@@ -734,6 +790,7 @@ public class ControladorTingoTango implements Serializable {
     public void reiniciar() {
 
         listaNiñosDEC.setCabezaInfante(null);
+        listaOportunidades.clear();
         modeloDerecha();
     }
 
@@ -834,17 +891,86 @@ public class ControladorTingoTango implements Serializable {
         modeloGrafica.setMaxConnections(-1);
         //Pregunto si hay datos
 
+        //YA SE PINTARON TODOS LOS ELEMENTOS 
+        //PROPIEDAD PARA EL CONECTOR
+        FlowChartConnector connector = new FlowChartConnector();
+        connector.setPaintStyle("{strokeStyle:'#092CB0',lineWidth:3}");
+        modeloGrafica.setDefaultConnector(connector);
+
+        int jugadorPorCuadrante = 0;
+        int numeroCuadrante = 1;
+        int residuoJugagores = listaNiñosDEC.contarNodosDEC() % 4;
+        int cuadrantey = 0;
+        String posFlecha = "";
+        int cantJugadores = 0;
+
         if (listaNiñosDEC.getCabezaInfante() != null) {
 
             //Llamar ayudante y ubicar en el primero 
             NodoDEInfante ayudanteDos = listaNiñosDEC.getCabezaInfante();
             //Recorro mientras el ayudante tenga ddato 
-            int posX = 2;
+            int posX = 13;
             int posY = 2;
+            int contFila = 0;
+            jugadorPorCuadrante = listaNiñosDEC.contarNodosDEC() / 4;
 
-            while (ayudanteDos.getSiguienteDE() != listaNiñosDEC.getCabezaInfante()) {
+            if (residuoJugagores == 3) {
+                jugadorPorCuadrante++;
+                cuadrantey = 2;
+
+            }
+            do {
+
+                if (contFila == jugadorPorCuadrante) {
+
+                    numeroCuadrante++;
+                    contFila = 0;
+                    if (numeroCuadrante == 2 && contFila == 0) {
+
+                        posX = posX + 8;
+                        if (residuoJugagores == 2 || residuoJugagores == 1) {
+                            jugadorPorCuadrante++;
+                            cuadrantey = 3;
+
+                        }
+
+                    } else if (numeroCuadrante == 3 && contFila == 0) {
+                        posY = posY + 4;
+
+                    } else if (numeroCuadrante == 4 && contFila == 0) {
+
+                        posX = posY - 8;
+                    }
+
+                }
+
+                switch (numeroCuadrante) {
+
+                    case 1:
+                        posX = posX + 8;
+                        posY = posY;
+                        posFlecha = "LEFT";
+                        break;
+                    case 2:
+                        posX = posX;
+                        posY = posY + 5;
+                        break;
+                    case 3:
+                        posX = posX - 8;
+                        posY = posY;
+                        break;
+                    case 4:
+                        posX = posX;
+                        posY = posY - 5 - cuadrantey;
+                        break;
+
+                }
 
                 Element niñoPintar = new Element(ayudanteDos.getDatoDos().getInfante().getNombre(), posX + "em", posY + "em");
+
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.AUTO_DEFAULT));
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.AUTO_DEFAULT));
+                modeloGrafica.addElement(niñoPintar);
 
                 if (ayudanteDos.getDatoDos().getInfante().getIdentificador()
                         == ayudanteColor.getDatoDos().getInfante().getIdentificador()) {
@@ -853,68 +979,112 @@ public class ControladorTingoTango implements Serializable {
 
                 }
 
-                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
-                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_LEFT));
-                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_RIGHT));
-
-                modeloGrafica.addElement(niñoPintar);
-
                 ayudanteDos = ayudanteDos.getSiguienteDE();
-                posX = posX + 5;
-                posY = posY + 5;
-            }
+                contFila++;
+                cantJugadores++;
 
-            Element niñoPintar = new Element(ayudanteDos.getDatoDos().getInfante().getNombre(), posX + "em", posY + "em");
-
-            if (ayudanteDos.getDatoDos().getInfante().getIdentificador()
-                    == ayudanteColor.getDatoDos().getInfante().getIdentificador()) {
-
-                niñoPintar.setStyleClass("ui-diagram-success");
-
-            }
-
-            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
-            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_LEFT));
-            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_RIGHT));
-
-            modeloGrafica.addElement(niñoPintar);
-
-            //YA SE PINTARON TODOS LOS ELEMENTOS 
-            //PROPIEDAD PARA EL CONECTOR
-            FlowChartConnector connector = new FlowChartConnector();
-            connector.setPaintStyle("{strokeStyle:'#092CB0',lineWidth:3}");
-            modeloGrafica.setDefaultConnector(connector);
+            } while (ayudanteDos != listaNiñosDEC.getCabezaInfante());
 
             for (int i = 0; i < modeloGrafica.getElements().size() - 1; i++) {
 
                 modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(i).getEndPoints().get(0), modeloGrafica.getElements().get(i + 1).getEndPoints().get(1), null));
-                modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(i + 1).getEndPoints().get(2), modeloGrafica.getElements().get(i).getEndPoints().get(3), null));
-//                modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(1).getEndPoints().get(2), modeloGrafica.getElements().get(3).getEndPoints().get(3), null));
+                modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(modeloGrafica.getElements().size() - 1).getEndPoints().get(0), modeloGrafica.getElements().get(0).getEndPoints().get(1), null));
             }
+
+        } else {
+
         }
     }
 
     public void modeloIzuierda() {
 
-//Instanciar el modelo
+        //Instanciar el modelo
         modeloGrafica = new DefaultDiagramModel();
         //Definir el modelo la cantidad de enlaces -1 (Infinito)
         modeloGrafica.setMaxConnections(-1);
         //Pregunto si hay datos
+
+        //YA SE PINTARON TODOS LOS ELEMENTOS 
+        //PROPIEDAD PARA EL CONECTOR
+        FlowChartConnector connector = new FlowChartConnector();
+        connector.setPaintStyle("{strokeStyle:'#092CB0',lineWidth:3}");
+        modeloGrafica.setDefaultConnector(connector);
+
+        int jugadorPorCuadrante = 0;
+        int numeroCuadrante = 1;
+        int residuoJugagores = listaNiñosDEC.contarNodosDEC() % 4;
+        int cuadrantey = 0;
+        String posFlecha = "";
+        int cantJugadores = 0;
 
         if (listaNiñosDEC.getCabezaInfante() != null) {
 
             //Llamar ayudante y ubicar en el primero 
             NodoDEInfante ayudanteDos = listaNiñosDEC.getCabezaInfante();
             //Recorro mientras el ayudante tenga ddato 
-            int posX = 2;
+            int posX = 13;
             int posY = 2;
+            int contFila = 0;
+            jugadorPorCuadrante = listaNiñosDEC.contarNodosDEC() / 4;
 
-            while (ayudanteDos.getSiguienteDE() != listaNiñosDEC.getCabezaInfante()) {
+            if (residuoJugagores == 3) {
+                jugadorPorCuadrante++;
+                cuadrantey = 2;
+
+            }
+            do {
+
+                if (contFila == jugadorPorCuadrante) {
+
+                    numeroCuadrante++;
+                    contFila = 0;
+                    if (numeroCuadrante == 2 && contFila == 0) {
+
+                        posX = posX + 8;
+                        if (residuoJugagores == 2 || residuoJugagores == 1) {
+
+                            jugadorPorCuadrante++;
+                            cuadrantey = 3;
+
+                        }
+
+                    } else if (numeroCuadrante == 3 && contFila == 0) {
+                        posY = posY + 4;
+
+                    } else if (numeroCuadrante == 4 && contFila == 0) {
+
+                        posX = posY - 8;
+                    }
+
+                }
+
+                switch (numeroCuadrante) {
+
+                    case 1:
+                        posX = posX + 8;
+                        posY = posY;
+                        posFlecha = "LEFT";
+                        break;
+                    case 2:
+                        posX = posX;
+                        posY = posY + 5;
+                        break;
+                    case 3:
+                        posX = posX - 8;
+                        posY = posY;
+                        break;
+                    case 4:
+                        posX = posX;
+                        posY = posY - 5 - cuadrantey;
+                        break;
+
+                }
 
                 Element niñoPintar = new Element(ayudanteDos.getDatoDos().getInfante().getNombre(), posX + "em", posY + "em");
+
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.AUTO_DEFAULT));
+                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.AUTO_DEFAULT));
+                modeloGrafica.addElement(niñoPintar);
 
                 if (ayudanteDos.getDatoDos().getInfante().getIdentificador()
                         == ayudanteColor.getDatoDos().getInfante().getIdentificador()) {
@@ -923,46 +1093,22 @@ public class ControladorTingoTango implements Serializable {
 
                 }
 
-                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
-                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_LEFT));
-                niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_RIGHT));
-
-                modeloGrafica.addElement(niñoPintar);
-
                 ayudanteDos = ayudanteDos.getSiguienteDE();
-                posX = posX + 5;
-                posY = posY + 5;
-            }
+                contFila++;
+                cantJugadores++;
 
-            Element niñoPintar = new Element(ayudanteDos.getDatoDos().getInfante().getNombre(), posX + "em", posY + "em");
-
-            if (ayudanteDos.getDatoDos().getInfante().getIdentificador()
-                    == ayudanteColor.getDatoDos().getInfante().getIdentificador()) {
-
-                niñoPintar.setStyleClass("ui-diagram-success");
-
-            }
-
-            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.RIGHT));
-            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.LEFT));
-            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_LEFT));
-            niñoPintar.addEndPoint(new BlankEndPoint(EndPointAnchor.BOTTOM_RIGHT));
-
-            modeloGrafica.addElement(niñoPintar);
-
-            //YA SE PINTARON TODOS LOS ELEMENTOS 
-            //PROPIEDAD PARA EL CONECTOR
-            FlowChartConnector connector = new FlowChartConnector();
-            connector.setPaintStyle("{strokeStyle:'#092CB0',lineWidth:3}");
-            modeloGrafica.setDefaultConnector(connector);
+            } while (ayudanteDos != listaNiñosDEC.getCabezaInfante());
 
             for (int i = 0; i < modeloGrafica.getElements().size() - 1; i++) {
 
                 modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(i).getEndPoints().get(0), modeloGrafica.getElements().get(i + 1).getEndPoints().get(1), null));
-                modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(i + 1).getEndPoints().get(2), modeloGrafica.getElements().get(i).getEndPoints().get(3), null));
+                modeloGrafica.connect(createConnection(modeloGrafica.getElements().get(modeloGrafica.getElements().size() - 1).getEndPoints().get(0), modeloGrafica.getElements().get(0).getEndPoints().get(1), null));
             }
+
+        } else {
+
         }
+
     }
 
 }

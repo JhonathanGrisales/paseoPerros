@@ -44,14 +44,15 @@
                         <p:column>
 
                             <h:outputText  value="Oportunidades"/>
-                            <p:spinner value="#{controladorTingoTango.numOportunidades}" required="true" min="1 "  max="#{controladorTingoTango.numOportunidades}"/>
-                            <p:commandButton value="Reingresar"  action="#{controladorTingoTango.reingresarPorGenero()}" update="frmTingoTngo" />
+                            <p:spinner value="#{controladorTingoTango.oporGenero}" required="true" min="1 "  max="#{controladorTingoTango.numOportunidades}"/>
+                            <p:commandButton value="Reingresar"  action="#{controladorTingoTango.reingresarPorGenero()}"
+                                             update="frmTingoTngo" disabled="#{controladorTingoTango.listaNiñosDEC.cabezaInfante == null}" />
 
                         </p:column>
 
 
                         <p:commandButton id="btnIniciarDer" value="#{controladorTingoTango.textoBotonIniciarDer}" 
-                                         disabled="#{controladorTingoTango.listaNiñosDEC.contarNodosDEC() == 1}" 
+                                         disabled="#{controladorTingoTango.listaNiñosDEC.cabezaInfante == null}" 
                                          style="color:#{controladorTingoTango.colorBotonDer} !important;"
                                          action="#{controladorTingoTango.controlarJuegoDerecha()}" update="frmTingoTngo,erroresTingoTango">
 
@@ -64,7 +65,7 @@
 
                         <p:menubar>
 
-                            <p:submenu label="Retirar por genero" icon="pi pi-briefcase">
+                            <p:submenu label="Retirar por genero" icon="pi pi-briefcase" disabled="#{controladorTingoTango.listaNiñosDEC.cabezaInfante == null}"  >
                                 <p:menuitem value="Niñas" ajax="false" action="#{controladorTingoTango.retirarNiñas()}"    update="@form,erroresTingoTango"/>
                                 <p:menuitem value="Niños" ajax="false" action="#{controladorTingoTango.retirarNiños()}"    update="@form,erroresTingoTango"/>
 
@@ -78,20 +79,20 @@
                         <p:column></p:column>
 
                         <p:commandButton id="btnIniciarIzq" value="#{controladorTingoTango.textoBotonIzqui}" 
-                                         disabled="#{controladorTingoTango.listaNiñosDEC.contarNodosDEC() == 1}"
+                                         disabled="#{controladorTingoTango.listaNiñosDEC.cabezaInfante == null}"
                                          style="color:#{controladorTingoTango.colorBotonIzqu} !important;"
                                          action="#{controladorTingoTango.controlarJuegoIzqui()}" update="frmTingoTngo,erroresTingoTango" >
 
 
 
 
-                            <p:poll interval="1" listener="#{controladorTingoTango.pasarAnteriorDerColor()}" 
-                                    rendered="#{controladorTingoTango.estadoJuegoIzqu}"  update="Grafica" />
+                            <p:poll  interval="1"  listener="#{controladorTingoTango.pasarAnteriorDerColor()}" 
+                                     rendered="#{controladorTingoTango.estadoJuegoIzqu}"  update="Grafica" />
 
                         </p:commandButton> 
 
 
-                        <p:commandButton value="Reiniciar juego" action="#{controladorTingoTango.reiniciar()}"
+                        <p:commandButton value="Reiniciar juego" action="#{controladorTingoTango.reiniciar()}" disabled="#{controladorTingoTango.listaNiñosDEC.cabezaInfante == null}"  
                                          update="frmTingoTngo">
 
 
@@ -149,13 +150,19 @@
                             <p:outputLabel  value="Identificador"/>
                             <p:outputLabel  value="#{controladorTingoTango.infanteReingresar.infante.identificador}"  />
                             <p:outputLabel  value="Oportunidades"/>
-                            <p:spinner  value="#{controladorTingoTango.numOportunidades}" min="1" max="#{controladorTingoTango.numOportunidades}"/>
+                            <p:spinner  value="#{controladorTingoTango.numOporIngreso}" min="1" max="#{controladorTingoTango.numOportunidades}"/>
 
-                            <p:commandButton  value="Reingresar" action="#{controladorTingoTango.reingresarNiño()}" update="frmTingoTngo" >
+                            <p:commandButton  value="Reingresar" action="#{controladorTingoTango.reingresarNiño()}" 
+                                              update="frmTingoTngo" disabled="#{controladorTingoTango.listaNiñosDEC.cabezaInfante == null}" >
 
 
 
                             </p:commandButton>
+
+
+
+
+
 
 
                             <p:selectOneMenu id="ingresarEnPosicion"  value="#{controladorTingoTango.seleccionUbicacion}" required="" >
@@ -163,13 +170,22 @@
                                 <f:selectItem itemLabel="Reingresar en posición" itemEscaped="true"  />
                                 <f:selectItem itemValue="1"  itemLabel="Al inicio" />
                                 <f:selectItem itemValue="2" itemLabel="Al final" />
-                                <f:selectItem itemValue="3" itemLabel="En posicion dada" />
+                               
 
                             </p:selectOneMenu>
 
-                            <h:outputText  value="Posicion"/>
+                            <h:outputText  value="Posicion especifica"/>
                             <p:spinner value="#{controladorTingoTango.posicion}" required="true" min="1 "  max="#{controladorTingoTango.contarInfantes()}"/>
+                            
+                            
+                            <p:commandButton  value="Reingresar en posicion dada" action="#{controladorTingoTango.reingresarEnPosDada()}" 
+                                              update="frmTingoTngo" disabled="#{controladorTingoTango.listaNiñosDEC.cabezaInfante == null}" >
 
+
+
+                            </p:commandButton>
+                            
+                            <p:commandButton  value="Sigte" action="#{controladorTingoTango.pasarSiguienteDerColor()}" update="frmTingoTngo" />
 
 
 
@@ -203,10 +219,6 @@
                 </p:panel>
 
 
-
-
-
-
             </p:dashboard>
 
 
@@ -233,25 +245,23 @@
             </p:dialog>
 
 
+            <p:dialog id="myDialogID" widgetVar="myDialogVar" closeOnEscape="true" modal="true" height="200"  > 
+                <p:panel id="pnlGanador" header="NIÑO GANADOR" style="background-color: #AFAFAF" >
+
+                    <p:panelGrid columns="2" style="border: #98AFC7" >
+
+                        <h:outputText value="NOMBRE" style="color: #036fab"  />
+                        <h:outputText value="#{controladorTingoTango.ayudanteColor.datoDos.infante.nombre}"  style="color: #036fab"  />
+                        <h:outputText value="ID" style="color: #036fab" />
+                        <h:outputText value="#{controladorTingoTango.ayudanteColor.datoDos.infante.identificador}"  style="color: #036fab" />
+
+                    </p:panelGrid>
+
+                </p:panel>
+            </p:dialog> 
+
+
         </h:form>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     </ui:define>
