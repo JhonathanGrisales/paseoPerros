@@ -570,16 +570,54 @@ public class ControladorTingoTango implements Serializable {
     public void retirarNiñas() {
 
         int contador = listaNiñosDEC.contarNiños("niña");
+        int cont = listaNiñosDEC.contarNiños("niño");
 
-        if (contador != listaNiñosDEC.contarNodosDEC()) {
+        if (cont == 1) {
 
-            guardarNiñas();
-            listaNiñosDEC.eliminarNiños("niña");
-            modeloDerecha();
+            JsfUtil.addErrorMessage("No puede quedar un solo niño en el juego");
 
         } else {
 
-            JsfUtil.addErrorMessage("Solo hay niñas , el juego no puede quedar vacio");
+            if (contador != listaNiñosDEC.contarNodosDEC()) {
+
+                guardarNiñas();
+                listaNiñosDEC.eliminarNiños("niña");
+                ayudanteColor = listaNiñosDEC.getCabezaInfante();
+                modeloDerecha();
+
+            } else {
+
+                JsfUtil.addErrorMessage("Solo hay niñas , el juego no puede quedar vacio");
+
+            }
+
+        }
+
+    }
+
+    public void retirarNiños() {
+
+        int contador = listaNiñosDEC.contarNiños("niño");
+        int cont = listaNiñosDEC.contarNiños("niña");
+
+        if (cont == 1) {
+
+            JsfUtil.addErrorMessage("No puede quedar una sola niña en el juego");
+
+        } else {
+
+            if (contador != listaNiñosDEC.contarNodosDEC()) {
+
+                guardarNiños();
+                listaNiñosDEC.eliminarNiños("niño");
+                ayudanteColor = listaNiñosDEC.getCabezaInfante();
+                modeloDerecha();
+
+            } else {
+
+                JsfUtil.addErrorMessage("Solo hay niños , el juego no puede quedar vacio");
+
+            }
 
         }
 
@@ -626,24 +664,6 @@ public class ControladorTingoTango implements Serializable {
         if (cont == 0) {
 
             JsfUtil.addErrorMessage("No hay Niños para retirar del juego");
-
-        }
-
-    }
-
-    public void retirarNiños() {
-
-        int contador = listaNiñosDEC.contarNiños("niño");
-
-        if (contador != listaNiñosDEC.contarNodosDEC()) {
-
-            guardarNiños();
-            listaNiñosDEC.eliminarNiños("niño");
-            modeloDerecha();
-
-        } else {
-
-            JsfUtil.addErrorMessage("Solo hay niños , el juego no puede quedar vacio");
 
         }
 
